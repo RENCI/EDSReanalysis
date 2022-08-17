@@ -4,9 +4,8 @@
 cff-version: 1.2.0
 title: EDSReanalaysis: geopoints_to_waterLevels 
 message: >-
-  This software is for illustrative purposes only. No guarentees or warrenties are implied 
-  If you use this software, please cite it using the
-  metadata from this file.
+  This software is for illustrative purposes only. No guarantees or warranties are implied.
+  If you use this software, please cite it using the metadata from this file.
 type: software
 authors:
   - affiliation: RENCI
