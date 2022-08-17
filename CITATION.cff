@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: EDSReanalaysis: geopoints_to_waterLevels 
+message: >-
+  This software is for illustrative purposes only. No guarentees or warrenties are implied 
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - affiliation: RENCI
+    name-particle: L
+    family-names: Tilson
+    name-suffix: Jeffrey
+    email: jtilson@renci.org
+    affiliation: RENCI
+  - name-particle: O
+    family-names: Blanton
+    name-suffix: Brian
+    email: bblanton@renci.org
+    affiliation: RENCI

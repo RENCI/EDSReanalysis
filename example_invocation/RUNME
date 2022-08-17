@@ -1,0 +1,25 @@
+# Sample invocations of the basic "simple" method
+# This approach demonstrates using the single-call method to fetch the desired water_levels
+# Defaults to the TDS to fetch ADCIRC data
+
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_HS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_TPS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_TPS' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_DIR.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_DIR' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1
+
+# Simple approach but alternative (eg local) adcirc data source
+
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1 --alt_urlsource '/projects/reanalysis/ADCIRC/ERA5/hsofs/%d'
+
+# Run the more detailed script
+# This approach exposes more details about how the procedure is invoked and allows more advanced users to have more control over the process
+
+python ../geopoints_singleyear_detailed_to_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1 --year 2018
+python ../geopoints_singleyear_detailed_to_reducedWaterlevels.py --filename 'swan_HS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --kmax=1 --year 2018
+
+# Use a larger input geopoints file
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_500grid_lonlat.csv' --kmax=10
+
+
+
+
