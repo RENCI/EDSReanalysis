@@ -49,9 +49,9 @@ class demoInterface():
         # Create variable dictionary
         self.vardict={}
         self.vardict['water level']={'filename': 'fort.63_transposed_and_rechunked_1024.nc', 'varname':'zeta'}
-        self.vardict['wave height']={'filename': 'swan_HS_transposed_and_rechunked_1024.nc', 'varname':'swan_HS'}
-        self.vardict['wave period']={'filename': 'swan_TPS_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
-        self.vardict['wave direction']={'filename': 'swan_DIR_transposed_and_rechunked_1024.nc', 'varname':'swan_DIR'}
+        self.vardict['wave height']={'filename': 'swan_HS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_HS'}
+        self.vardict['wave period']={'filename': 'swan_TPS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
+        self.vardict['wave direction']={'filename': 'swan_DIR.63_transposed_and_rechunked_1024.nc', 'varname':'swan_DIR'}
         
         #Create Styles
         style="""
