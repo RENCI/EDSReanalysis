@@ -134,7 +134,12 @@ class demoInterface():
                 lbl.add_class(f'style_coords')
                 display(lbl)
                 display(df_geopoints)
-        
+   
+        # Clear output of frames before running Combined_multiyear_pipeline 
+        self.o4.clear_output()
+        self.o5.clear_output()
+        self.o6.clear_output()
+    
         # Get file name and variable name from vardict using var_selector value
         filename=self.vardict[self.var_selector.value]['filename']
         variable_name=self.vardict[self.var_selector.value]['varname']
