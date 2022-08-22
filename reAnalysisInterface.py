@@ -1,8 +1,8 @@
-#import ipywidgets as widgets
-import base64, hashlib
+import base64, hashlib, sys
 from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider
 from IPython.display import display, clear_output, HTML as IHTML
 from io import StringIO
+from contextlib import redirect_stdout
 from typing import Callable
 import pandas as pd
 import numpy as np
@@ -65,6 +65,7 @@ class demoInterface():
                 .o4 {width:400px; border:1px solid #ddd}
                 .o5 {width:400px; border:1px solid #ddd}
                 .o6 {width:400px; border:1px solid #ddd}
+                .o7 {width:400px; border:1px solid #ddd}
                 
                 .style_coords {background-color:#fafaaa}
                 .style_data {background-color:#faaafa}
@@ -88,11 +89,13 @@ class demoInterface():
         self.o5.add_class('o5')
         self.o6 = Output()
         self.o6.add_class('o6')
+        self.o7 = Output()
+        self.o7.add_class('o7')
 
         # Combine interace sections, using VBox, and HBox, to scene and display
         scene = VBox([self.o1,
                       HBox([self.o2, self.o3, self.o4]),
-                      HBox([self.o5, self.o6])
+                      HBox([self.o5, self.o6, self.o7])
                      ])
         display(scene)
     
@@ -139,6 +142,7 @@ class demoInterface():
         self.o4.clear_output()
         self.o5.clear_output()
         self.o6.clear_output()
+        self.o7.clear_output()
     
         # Get file name and variable name from vardict using var_selector value
         filename=self.vardict[self.var_selector.value]['filename']
@@ -149,14 +153,24 @@ class demoInterface():
         nearest_neighbors=self.kmax_selector.value
         #alt_urlsource = '/Users/jmpmcman/Work/Surge/data/reanalysis/ADCIRC/ERA5/hsofs/%d'
 
-        df_product_data,df_product_metadata,df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
+        # Create variable to output print statements from utilities.Combined_multiyear_pipeline
+        po = StringIO()
+
+        # With redirect_stdout run utilities.Combined_multiyear_pipeline 
+        with redirect_stdout(po):
+            df_product_data,df_product_metadata,df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
                                                                                                 filename=filename, 
                                                                                                 variable_name=variable_name,
                                                                                                 geopoints=geopoints,
                                                                                                 nearest_neighbors=nearest_neighbors)
+
+        # Output print statements from utilities.Combined_multiyear_pipeline to data frame
+        with self.o4:
+            clear_output()
+            display(po.getvalue())
         
         # Add product data to output sections o4
-        with self.o4:
+        with self.o5:
             clear_output()
             lbl = Label(value=f'There are {len(df_product_data.index)} data records(s)')
             lbl.add_class(f'style_data')
@@ -167,7 +181,7 @@ class demoInterface():
             display(df_product_data)
 
         # Add product meta-data to output sections o5
-        with self.o5:
+        with self.o6:
             clear_output()
             lbl = Label(value=f'There are {len(df_product_metadata.index)} meta records(s)')
             lbl.add_class(f'style_meta')
@@ -178,7 +192,7 @@ class demoInterface():
             display(df_product_metadata)
             
         # Add excluded product data to output sections o4
-        with self.o6:
+        with self.o7:
             clear_output()
             lbl = Label(value=f'There are {len(df_excluded.index)} data records(s) that have been excluded')
             lbl.add_class(f'style_excluded')
