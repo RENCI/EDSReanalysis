@@ -25,7 +25,6 @@ class DownloadButton(Button):
         contents: bytes = self.contents().encode('utf-8')
         b64 = base64.b64encode(contents)
         payload = b64.decode()
-        print('test hello')
         digest = hashlib.md5(contents).hexdigest()  # bypass browser cache
         id = f'dl_{digest}'
  
