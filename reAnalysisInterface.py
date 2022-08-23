@@ -25,9 +25,10 @@ class DownloadButton(Button):
         contents: bytes = self.contents().encode('utf-8')
         b64 = base64.b64encode(contents)
         payload = b64.decode()
+        print('test hello')
         digest = hashlib.md5(contents).hexdigest()  # bypass browser cache
         id = f'dl_{digest}'
-
+ 
         display(IHTML(f"""
 <html>
 <body>
@@ -110,12 +111,11 @@ class demoInterface():
             self.year_selector=IntRangeSlider(value=[1979, 2021],min=1979,max=2021,step=1,description='Years:',
                                                     disabled=False,continuous_update=False,orientation='horizontal',
                                                     readout=True,readout_format='d')
-            self.kmax_selector = Dropdown(description='KMax', options=np.arange(10)+1)
             
             self.btn = Button(description='Submit')
             self.btn.on_click(self.process_submit)
             
-            display(self.fileuploader, self.var_selector, self.year_selector, self.kmax_selector, self.btn)
+            display(self.fileuploader, self.var_selector, self.year_selector, self.btn)
 
     # Function which is used to process results
     def process_submit(self, b):
@@ -150,7 +150,6 @@ class demoInterface():
         
         # Get year tuple from year_selector value
         year_tuple=self.year_selector.value
-        nearest_neighbors=self.kmax_selector.value
         #alt_urlsource = '/Users/jmpmcman/Work/Surge/data/reanalysis/ADCIRC/ERA5/hsofs/%d'
 
         # Create variable to output print statements from utilities.Combined_multiyear_pipeline
@@ -159,10 +158,10 @@ class demoInterface():
         # With redirect_stdout run utilities.Combined_multiyear_pipeline 
         with redirect_stdout(po):
             df_product_data,df_product_metadata,df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
-                                                                                                filename=filename, 
-                                                                                                variable_name=variable_name,
-                                                                                                geopoints=geopoints,
-                                                                                                nearest_neighbors=nearest_neighbors)
+                                                                                                    filename=filename, 
+                                                                                                    variable_name=variable_name,
+                                                                                                    geopoints=geopoints,
+                                                                                                    nearest_neighbors=10)
 
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
