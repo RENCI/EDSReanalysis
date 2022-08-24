@@ -13,6 +13,11 @@ authors:
     family-names: Tilson
     name-suffix: Jeffrey
     email: jtilson@renci.org
+  - affiliation: RENCI
+    name-particle: M
+    family-names: McManus
+    name-suffix: Jim
+    email: jmpmcman@renci.org
     affiliation: RENCI
   - name-particle: O
     family-names: Blanton

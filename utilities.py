@@ -1,3 +1,15 @@
+'''
+MIT License
+
+Copyright (c) 2022, Renaissance Computing Institute
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+'''
+
 import sys 
 import numpy as np
 import pandas as pd
@@ -7,36 +19,19 @@ from scipy import spatial as sp
 from datetime import date, datetime
 import time as tm
 
+#print("utilities:Xarray Version = {}".format(xr.__version__))
+
 got_kdtree=None
 TOL=10e-5
 
-# Specify total number of available reanalysis years
-YEARS=[1979,
-       1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989,
-       1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-       2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-       2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-       2020, 2021]
+# Specify available reanalysis years
+ymin=1979
+ymax=2021
+YEARS=[item for item in range(ymin, ymax+1)]
 
-# urldirformat="/projects/reanalysis/ADCIRC/ERA5/hsofs/%d"
-# Default standard locztion is on the RENCI TDS
+# Default standard location is on the primary RENCI TDS
 urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d"
 
-# dict for correspondance between internal netCDF variable names and netCDF file names.
-# these should be determined by querying the standard names ...
-
-# Typical mappings 
-#varnamedict = {
-#  "zeta_max": "maxele.63.nc",
-#  "vel_max":  "maxvel.63.nc",
-#  "inun_max": "maxinundepth.63.nc",
-#  "zeta":     "fort.63_transposed_and_rechunked_1024.nc",
-#  "swan_HS":  "swan_HS.63_transposed_and_rechunked_1024.nc",
-#  "swan_TPS": "swan_TPS.63_transposed_and_rechunked_1024.nc",
-#  "swan_DIR": "swan_DIR.63_transposed_and_rechunked_1024.nc"
-#}
-
-print("utilities:Xarray Version = {}".format(xr.__version__))
 
 def get_adcirc_grid_from_ds(ds):
     """
@@ -154,8 +149,9 @@ def get_adcirc_slice_from_ds(ds,v,it=0):
 
 def ComputeTree(agdict):
     """
-    Given the pre-loaded lon,lat,ele entries in agdict,compute the means and 
-    generate the full ADCIRC grid KDTree
+    Given lon,lat,ele in agdict,compute element centroids and 
+    generate the ADCIRC grid KDTree
+    returns agdict with tree
     """
 
     global got_kdtree # Try not too if already done
@@ -202,12 +198,11 @@ def ComputeQuery(xylist, agdict, kmax=10):
 
 def ComputeBasisRepresentation(xylist, agdict, agresults):
     """
-    For each test point with kmax number_neighbors, compute basis representations for
+    For each test point with kmax number_neighbors, compute linear basis for
     each neighbor. Then, check which, if any, element the test point actually resides within.
-    If none, then the returned basis function (weights) are set to nans. Doing it this way
-    will retain the order of user supplied test points, overall
+    If none, then the returned basis functions (i.e., interpolation weights) are set to nans. 
 
-    Now if the user chooses an exact grid point for the input geopoint, then ambiguity
+    If an input point is an "exact" grid point (i.e., ADCIRC grid node), then ambiguity
     may arise regarding the best element and multiple True statuses can occur. Here we 
     also keep the nearest element value. We do this by reverse iterating in the zip function
     """
@@ -260,7 +255,8 @@ def detailed_weights_elements(phival_list, j):
 
 def WaterLevelReductions(t, data_list, final_weights):
     """
-    Each data_list is a df for a single test point containing 3 columns. 
+    Each data_list is a df for a single point containing 3 columns, one for 
+    each node in the containing element. 
     These columns are reduced using the final_weights previously calculated
     
     A final df is returned with index=time and a single column for each of the
@@ -277,7 +273,7 @@ def WaterLevelReductions(t, data_list, final_weights):
 def GenerateMetadata(agresults):
     """
     Here we want to simply assist the user by reporting back the lon/lat values for each geopoint.
-    This should be the same as the input dataset.-99999 elements means none found
+    This should be the same as the input dataset. -99999 indicates an element was not found in the grid.
     """
     df_lonlat=pd.DataFrame(agresults['geopoints'], columns=['LON','LAT'])
     df_elements = pd.DataFrame(agresults['final_jvals']+1, columns=['ELE+1'])
@@ -290,9 +286,9 @@ def GenerateMetadata(agresults):
 
 def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=None): 
     """
-    This method acquires ADCIRC water levels for the list of geopoints/elements (three for the current grids). for each specified element of the grid
-    the resulting time series' are reduced to a single time series using a (basis2d) weighted sum. For a non-nan value to 
-    result in the final data, the product data must:
+    This method acquires ADCIRC water levels for the list of geopoints/elements (three for the current grids). 
+    For each specified point in the grid, the resulting time series' are reduced to a single time series using 
+    a (basis2d) weighted sum. For a non-nan value to result in the final data, the product data must:
     1) Be non-nan for each time series at the specified time tick
     2) The test point must be interior to the specified element
     """
@@ -323,7 +319,7 @@ def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=
 def return_sorted_years(year_tuple):
     """
     Range of years (inclusive) to test: (start_year,end_year)
-    Sort and ensure existance
+    Sort and ensure existence
     """
     print(year_tuple)
     start_year=year_tuple[0] if year_tuple[0] in YEARS else None
@@ -331,7 +327,7 @@ def return_sorted_years(year_tuple):
     if all(year_tuple):
         year_tuple=tuple(sorted((start_year,end_year)))
     else:
-        print(f'One or more bad years were specified {year_tuple}')
+        print(f'One or more specified years are out of range: {year_tuple}')
         print(f'Choose from only {YEARS}')
         sys.exit(1)
     return year_tuple[0],year_tuple[1]
@@ -339,7 +335,7 @@ def return_sorted_years(year_tuple):
 def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, variable_name=None, nearest_neighbors=10, alt_urlsource=None): 
     """
     User must provide the proper filename (eg fort.63.nc) from which to access the data
-         must provide the associated variable_nae for the data product
+         must provide the associated variable_name for the data product
          May provide an alternative storage location, with caveats, else the TDS server is used.
     """
     urlfetchdir=urldirformat if alt_urlsource is None else alt_urlsource
@@ -362,10 +358,10 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
 # NOTE We do not need to rebuild the treee for each year since the grid is unchanged.
 def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     """
-    Simply run the series of steps as part of this method to shield users from some
-    of the details of the processing
-
-    df_excluded_geopoints list only those stations excluded by element interiority tests. Some could be all nans due to dry points
+    Interpolate for one year. 
+    
+    df_excluded_geopoints lists only those stations excluded by element tests. 
+    Some could be all nans due to dry points
 
     """
     ds = f63_to_xr(url)

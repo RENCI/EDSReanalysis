@@ -1,3 +1,15 @@
+'''
+MIT License
+
+Copyright (c) 2022, Renaissance Computing Institute
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+'''
+
 import base64, hashlib, sys
 from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider
 from IPython.display import display, clear_output, HTML as IHTML
@@ -27,7 +39,6 @@ class DownloadButton(Button):
         payload = b64.decode()
         digest = hashlib.md5(contents).hexdigest()  # bypass browser cache
         id = f'dl_{digest}'
- 
         display(IHTML(f"""
 <html>
 <body>
@@ -48,9 +59,9 @@ class demoInterface():
     def __init__(self):
         # Create variable dictionary
         self.vardict={}
-        self.vardict['water level']={'filename': 'fort.63_transposed_and_rechunked_1024.nc', 'varname':'zeta'}
-        self.vardict['wave height']={'filename': 'swan_HS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_HS'}
-        self.vardict['wave period']={'filename': 'swan_TPS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
+        self.vardict['water level']=   {'filename': 'fort.63_transposed_and_rechunked_1024.nc',     'varname':'zeta'}
+        self.vardict['wave height']=   {'filename': 'swan_HS.63_transposed_and_rechunked_1024.nc',  'varname':'swan_HS'}
+        self.vardict['wave period']=   {'filename': 'swan_TPS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
         self.vardict['wave direction']={'filename': 'swan_DIR.63_transposed_and_rechunked_1024.nc', 'varname':'swan_DIR'}
         
         #Create Styles
@@ -78,7 +89,7 @@ class demoInterface():
         display(HTML(style))
         
         #Create interface sections
-        self.o1 = Output(layout=Layout(width='400px'))        
+        self.o1 = Output(layout=Layout(width='500px'))        
         self.o2 = Output() 
         self.o2.add_class('o2')
         self.o3 = Output()
@@ -92,7 +103,7 @@ class demoInterface():
         self.o7 = Output()
         self.o7.add_class('o7')
 
-        # Combine interace sections, using VBox, and HBox, to scene and display
+        # Combine interface sections, using VBox, and HBox, to scene and display
         scene = VBox([self.o1,
                       HBox([self.o2, self.o3, self.o4]),
                       HBox([self.o5, self.o6, self.o7])
@@ -101,8 +112,8 @@ class demoInterface():
     
         # Add title to header section o1
         with self.o1:
-            display(HTML('<h2>Demo Interface</h2>'))
-
+            display(HTML('<h2>User Inputs</h2>'))
+            
         # Add the fileuploader, var_selector, year_selector, and btn to menu section o2
         with self.o2:
             self.fileuploader = FileUpload(accept='', multiple=False)
@@ -122,13 +133,14 @@ class demoInterface():
             # If fileuploader has no values clear output and print warning message
             with self.o3:
                 clear_output()
-                print('Please select coordinate file')
+                print('Please upload a file of lon,lat coordinates.')
             return
         else:
             # If fileloader has values extract coordinates and input to variable sites
             df_geopoints = pd.read_csv(StringIO(list(self.fileuploader.value.values())[0]['content'].decode('utf-8')))
             geopoints = df_geopoints[['lon','lat']].to_numpy()
 
+        
             # Add df_sites to coordinate output sections o3
             with self.o3:
                 clear_output()
@@ -149,7 +161,6 @@ class demoInterface():
         
         # Get year tuple from year_selector value
         year_tuple=self.year_selector.value
-        #alt_urlsource = '/Users/jmpmcman/Work/Surge/data/reanalysis/ADCIRC/ERA5/hsofs/%d'
 
         # Create variable to output print statements from utilities.Combined_multiyear_pipeline
         po = StringIO()
