@@ -12,48 +12,40 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 import base64, hashlib, sys
 from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider
-from IPython.display import display, clear_output, HTML as IHTML
+from IPython.display import display, FileLink, clear_output, HTML as IHTML
+from collections import namedtuple
 from io import StringIO
 from contextlib import redirect_stdout
 from typing import Callable
+from html import escape
 import pandas as pd
 import numpy as np
 import utilities as utilities
 
-class DownloadButton(Button):
-    """Download button with dynamic content
+# Function that downloads DataFrame to CSV file, using RAM.
+def create_download_link(df, filename, title = "Download CSV file using RAM"):
+    csv = df.to_csv()
+    b64 = base64.b64encode(csv.encode())
+    payload = b64.decode()
+    html = '<a download="{filename}" href="data:text/csv;base64,{payload}" target="_blank">{title}</a>'
+    html = html.format(payload=payload,title=title,filename=filename)
+    return IHTML(html)
 
-    The content is generated using a callback when the button is clicked.
-    """
+# Function that downloads existing CSV file, that was saved in the process_submit function.
+class DownloadFileLink(FileLink):
+    html_link_str = "<a href='{link}' download={file_name}>{link_text}</a>"
 
-    def __init__(self, filename: str, contents: Callable[[], str], **kwargs):
-        super().__init__(**kwargs)
-        #DownloadButton, self
-        self.filename = filename
-        self.contents = contents
-        self.on_click(self.__on_click)
+    def __init__(self, path, file_name=None, link_text=None, *args, **kwargs):
+        super(DownloadFileLink, self).__init__(path, *args, **kwargs)
 
-    def __on_click(self, b):
-        contents: bytes = self.contents().encode('utf-8')
-        b64 = base64.b64encode(contents)
-        payload = b64.decode()
-        digest = hashlib.md5(contents).hexdigest()  # bypass browser cache
-        id = f'dl_{digest}'
-        display(IHTML(f"""
-<html>
-<body>
-<a id="{id}" download="{self.filename}" href="data:text/csv;base64,{payload}" download>
-</a>
+        self.file_name = file_name or os.path.split(path)[1]
+        self.link_text = link_text or self.file_name
 
-<script>
-(function download() {{
-document.getElementById('{id}').click();
-}})()
-</script>
-
-</body>
-</html>
-"""))
+    def _format_path(self):
+        fp = ''.join([self.url_prefix, escape(self.path)])
+        return ''.join([self.result_html_prefix,
+                        self.html_link_str.format(link=fp, file_name=self.file_name, link_text=self.link_text),
+                        self.result_html_suffix])
 
 class demoInterface():
     def __init__(self):
@@ -173,6 +165,9 @@ class demoInterface():
                                                                                                     geopoints=geopoints,
                                                                                                     nearest_neighbors=10)
 
+        # Save df_product_data DataFrame to ../data/data.csv, so it can be downloaded using DownloadFileLink.
+        df_product_data.to_csv('../data/data.csv')
+
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
             clear_output()
@@ -184,9 +179,10 @@ class demoInterface():
             lbl = Label(value=f'There are {len(df_product_data.index)} data records(s)')
             lbl.add_class(f'style_data')
             display(lbl)
-            sd = StringIO()
-            df_product_data.to_csv(sd)
-            display(DownloadButton(filename='data.csv', contents=lambda: f'{sd.getvalue()}', description='Download'))
+            DownloadFileLinkInfo = namedtuple('DownloadFileLinkInfo', ['path', 'file_name', 'link_text'])
+            dfs = DownloadFileLinkInfo('../data/data.csv', 'data.csv', 'Download CSV file, using saved file')
+            display(DownloadFileLink(dfs.path, file_name=dfs.file_name, link_text=dfs.link_text))
+            display(create_download_link(df_product_data, 'data.csv'))
             display(df_product_data)
 
         # Add product meta-data to output sections o5
@@ -195,9 +191,7 @@ class demoInterface():
             lbl = Label(value=f'There are {len(df_product_metadata.index)} meta records(s)')
             lbl.add_class(f'style_meta')
             display(lbl)
-            sm = StringIO()
-            df_product_metadata.to_csv(sm)
-            display(DownloadButton(filename='meta.csv', contents=lambda: f'{sm.getvalue()}', description='Download'))
+            display(create_download_link(df_product_metadata, 'meta.csv'))
             display(df_product_metadata)
             
         # Add excluded product data to output sections o4
@@ -206,8 +200,6 @@ class demoInterface():
             lbl = Label(value=f'There are {len(df_excluded.index)} data records(s) that have been excluded')
             lbl.add_class(f'style_excluded')
             display(lbl)
-            se = StringIO()
-            df_excluded.to_csv(se)
-            display(DownloadButton(filename='excluded_geopoints.csv', contents=lambda: f'{se.getvalue()}', description='Download'))
+            display(create_download_link(df_excluded, 'excluded_geopoints.csv'))
             display(df_excluded)
 
