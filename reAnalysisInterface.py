@@ -22,6 +22,8 @@ import pandas as pd
 import numpy as np
 import utilities as utilities
 
+Kmax=10
+
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
     csv = df.to_csv()
@@ -198,34 +200,29 @@ class demoInterface():
                                                                                                     filename=filename, 
                                                                                                     variable_name=variable_name,
                                                                                                     geopoints=geopoints,
-                                                                                                    nearest_neighbors=10)
+                                                                                                    nearest_neighbors=Kmax)
 
-        # Save df_product_data DataFrame to ../data/data.csv, so it can be downloaded using DownloadFileLink.
-        df_product_data.to_csv('../data/data.csv')
+        # Save df_product_data DataFrame to data.csv, so it can be downloaded using DownloadFileLink.
+        df_product_data.to_csv('data.csv')
 
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
             clear_output()
             display(po.getvalue())
         
-        # Add product data to output sections o4
+        # Add product data to output sections o5
         with self.o5:
             clear_output()
             lbl = Label(value=f'There are {len(df_product_data.index)} data records(s)')
             lbl.add_class(f'style_data')
             display(lbl)
             DownloadFileLinkInfo = namedtuple('DownloadFileLinkInfo', ['path', 'file_name', 'link_text'])
-            dfs = DownloadFileLinkInfo('../data/data.csv', 'data.csv', 'Download CSV file, using saved file')
+            dfs = DownloadFileLinkInfo('data.csv', 'data.csv', 'Download CSV file, using saved file')
             display(DownloadFileLink(dfs.path, file_name=dfs.file_name, link_text=dfs.link_text))
             display(create_download_link(df_product_data, 'data.csv'))
             display(df_product_data)
             
-            #sd = StringIO()
-            #df_product_data.to_csv(sd)
-            #display(DownloadButton(filename='data.csv', contents=lambda: f'{sd.getvalue()}', description='Download'))
-            #display(df_product_data)
-
-        # Add product meta-data to output sections o5
+         # Add product meta-data to output sections o6
         with self.o6:
             clear_output()
             lbl = Label(value=f'There are {len(df_product_metadata.index)} meta records(s)')
@@ -233,11 +230,10 @@ class demoInterface():
             display(lbl)
             sm = StringIO()
             df_product_metadata.to_csv(sm)
-#            display(DownloadButton(filename='meta.csv', contents=lambda: f'{sm.getvalue()}', description='Download'))
             display(create_download_link(df_product_metadata, 'meta.csv'))
             display(df_product_metadata)
             
-        # Add excluded product data to output sections o4
+        # Add excluded product data to output sections o7
         with self.o7:
             clear_output()
             lbl = Label(value=f'There are {len(df_excluded.index)} data records(s) that have been excluded')
@@ -245,7 +241,6 @@ class demoInterface():
             display(lbl)
             se = StringIO()
             df_excluded.to_csv(se)
-#            display(DownloadButton(filename='excluded_geopoints.csv', contents=lambda: f'{se.getvalue()}', description='Download'))
             display(create_download_link(df_excluded, 'excluded_geopoints.csv'))
             display(df_excluded)
 
