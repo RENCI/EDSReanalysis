@@ -198,14 +198,14 @@ class demoInterface():
 
         # With redirect_stdout run utilities.Combined_multiyear_pipeline 
         with redirect_stdout(po):
-            df_product_data,df_product_metadata,df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
-                                                                                                    filename=filename, 
-                                                                                                    variable_name=variable_name,
-                                                                                                    geopoints=geopoints,
-                                                                                                    nearest_neighbors=Kmax)
+            self.df_product_data,self.df_product_metadata,self.df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
+                                                                                                                   filename=filename, 
+                                                                                                                   variable_name=variable_name,
+                                                                                                                   geopoints=geopoints,
+                                                                                                                   nearest_neighbors=Kmax)
 
         # Save df_product_data DataFrame to data.csv, so it can be downloaded using DownloadFileLink.
-        df_product_data.to_csv('data.csv')
+        self.df_product_data.to_csv('data.csv')
 
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
@@ -217,36 +217,39 @@ class demoInterface():
         with self.o5:
             clear_output()
             display(HTML('<h4>Data Extracted for Stations</h4>'))
-            lbl = Label(value=f'There are {len(df_product_data.index)} data records(s)')
+            lbl = Label(value=f'There are {len(self.df_product_data.index)} data records(s)')
             lbl.add_class(f'style_data')
             display(lbl)
             DownloadFileLinkInfo = namedtuple('DownloadFileLinkInfo', ['path', 'file_name', 'link_text'])
             dfs = DownloadFileLinkInfo('data.csv', 'data.csv', 'Download CSV file, using saved file')
             display(DownloadFileLink(dfs.path, file_name=dfs.file_name, link_text=dfs.link_text))
-            display(create_download_link(df_product_data, 'data.csv'))
-            display(df_product_data)
+            display(create_download_link(self.df_product_data, 'data.csv'))
+            display(self.df_product_data)
             
          # Add product meta-data to output sections o6
         with self.o6:
             clear_output()
             display(HTML('<h4>Meta Data</h4>'))
-            lbl = Label(value=f'There are {len(df_product_metadata.index)} meta records(s)')
+            lbl = Label(value=f'There are {len(self.df_product_metadata.index)} meta records(s)')
             lbl.add_class(f'style_meta')
             display(lbl)
             sm = StringIO()
-            df_product_metadata.to_csv(sm)
-            display(create_download_link(df_product_metadata, 'meta.csv'))
-            display(df_product_metadata)
+            self.df_product_metadata.to_csv(sm)
+            display(create_download_link(self.df_product_metadata, 'meta.csv'))
+            display(self.df_product_metadata)
             
         # Add excluded product data to output sections o7
         with self.o7:
             clear_output()
             display(HTML('<h4>Stations Excluded</h4>'))
-            lbl = Label(value=f'There are {len(df_excluded.index)} data records(s) that have been excluded')
+            lbl = Label(value=f'There are {len(self.df_excluded.index)} data records(s) that have been excluded')
             lbl.add_class(f'style_excluded')
             display(lbl)
             se = StringIO()
-            df_excluded.to_csv(se)
-            display(create_download_link(df_excluded, 'excluded_geopoints.csv'))
-            display(df_excluded)
+            self.df_excluded.to_csv(se)
+            display(create_download_link(self.df_excluded, 'excluded_geopoints.csv'))
+            display(self.df_excluded)
+
+        # Return DataFrames to be able to access them outside of widgets
+        return self.df_product_data, self.df_product_metadata, self.df_excluded
 
