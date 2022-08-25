@@ -250,6 +250,3 @@ class demoInterface():
             display(create_download_link(self.df_excluded, 'excluded_geopoints.csv'))
             display(self.df_excluded)
 
-        # Return DataFrames to be able to access them outside of widgets
-        return self.df_product_data, self.df_product_metadata, self.df_excluded
-
