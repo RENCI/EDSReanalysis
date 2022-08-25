@@ -141,10 +141,11 @@ class demoInterface():
     
         # Add title to header section o1
         with self.o1:
-            display(HTML('<h2>User Inputs</h2>'))
+            display(HTML('<h2>Demo Interface</h2>'))
             
         # Add the fileuploader, var_selector, year_selector, and btn to menu section o2
         with self.o2:
+            display(HTML('<h4>User Inputs</h4>'))
             self.fileuploader = FileUpload(accept='', multiple=False)
             self.var_selector = Dropdown(description='Variable', options=['water level', 'wave height', 'wave period', 'wave direction'])
             self.year_selector=IntRangeSlider(value=[1979, 2021],min=1979,max=2021,step=1,description='Years:',
@@ -173,6 +174,7 @@ class demoInterface():
             # Add df_sites to coordinate output sections o3
             with self.o3:
                 clear_output()
+                display(HTML('<h4>List of Stations Uploaded</h4>'))
                 lbl = Label(value=f'There are {len(df_geopoints.index)} coordinate pair(s)')
                 lbl.add_class(f'style_coords')
                 display(lbl)
@@ -208,11 +210,13 @@ class demoInterface():
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
             clear_output()
+            display(HTML('<h4>Code Run Output</h4>'))
             display(po.getvalue())
         
         # Add product data to output sections o5
         with self.o5:
             clear_output()
+            display(HTML('<h4>Data Extracted for Stations</h4>'))
             lbl = Label(value=f'There are {len(df_product_data.index)} data records(s)')
             lbl.add_class(f'style_data')
             display(lbl)
@@ -225,6 +229,7 @@ class demoInterface():
          # Add product meta-data to output sections o6
         with self.o6:
             clear_output()
+            display(HTML('<h4>Meta Data</h4>'))
             lbl = Label(value=f'There are {len(df_product_metadata.index)} meta records(s)')
             lbl.add_class(f'style_meta')
             display(lbl)
@@ -236,6 +241,7 @@ class demoInterface():
         # Add excluded product data to output sections o7
         with self.o7:
             clear_output()
+            display(HTML('<h4>Stations Excluded</h4>'))
             lbl = Label(value=f'There are {len(df_excluded.index)} data records(s) that have been excluded')
             lbl.add_class(f'style_excluded')
             display(lbl)
