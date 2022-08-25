@@ -17,6 +17,7 @@ from collections import namedtuple
 from io import StringIO
 from contextlib import redirect_stdout
 from typing import Callable
+from html import escape
 import pandas as pd
 import numpy as np
 import utilities as utilities
@@ -198,6 +199,9 @@ class demoInterface():
                                                                                                     variable_name=variable_name,
                                                                                                     geopoints=geopoints,
                                                                                                     nearest_neighbors=10)
+
+        # Save df_product_data DataFrame to ../data/data.csv, so it can be downloaded using DownloadFileLink.
+        df_product_data.to_csv('../data/data.csv')
 
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
