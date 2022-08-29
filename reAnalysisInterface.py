@@ -141,10 +141,11 @@ class demoInterface():
     
         # Add title to header section o1
         with self.o1:
-            display(HTML('<h2>User Inputs</h2>'))
+            display(HTML('<h2>Main Title</h2>'))
             
         # Add the fileuploader, var_selector, year_selector, and btn to menu section o2
         with self.o2:
+            display(HTML('<h2>User Inputs</h2>'))
             self.fileuploader = FileUpload(accept='', multiple=False)
             self.var_selector = Dropdown(description='Variable', options=['water level', 'wave height', 'wave period', 'wave direction'])
             self.year_selector=IntRangeSlider(value=[1979, 2021],min=1979,max=2021,step=1,description='Years:',
