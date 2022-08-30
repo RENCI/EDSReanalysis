@@ -23,6 +23,7 @@ import time as tm
 
 got_kdtree=None
 TOL=10e-5
+debug=False
 
 # Specify available reanalysis years
 ymin=1979
@@ -31,6 +32,7 @@ YEARS=[item for item in range(ymin, ymax+1)]
 
 # Default standard location is on the primary RENCI TDS
 urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d"
+#urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/ec95d/%d"
 
 
 def get_adcirc_grid_from_ds(ds):
@@ -170,7 +172,7 @@ def ComputeTree(agdict):
         got_kdtree=tree
     else:
         agdict['tree']=got_kdtree
-    print(f'Build annual KDTree time is {tm.time()-t0}s')
+    if debug: print(f'Build annual KDTree time is {tm.time()-t0}s')
     return agdict
 
 def ComputeQuery(xylist, agdict, kmax=10):
@@ -193,7 +195,7 @@ def ComputeQuery(xylist, agdict, kmax=10):
     agresults['elements']=j
     agresults['number_neighbors']=kmax
     agresults['geopoints']=xylist # We shall use this later
-    print(f'KDTree query of size {kmax} took {tm.time()-t0}s')
+    if debug: print(f'KDTree query of size {kmax} took {tm.time()-t0}s')
     return agresults
 
 def ComputeBasisRepresentation(xylist, agdict, agresults):
@@ -233,7 +235,7 @@ def ComputeBasisRepresentation(xylist, agdict, agresults):
     agresults['final_weights']=final_weights
     agresults['final_jvals']=final_jvals
     agresults['final_status']=final_status
-    print(f'Identify best annual basis weights took {tm.time()-t0}s')
+    if debug: print(f'Identify best annual basis weights took {tm.time()-t0}s')
     # Keep the list if the user needs to know after the fact
     outside_elements = np.argwhere(np.isnan(final_weights).all(axis=1)).ravel()
     agresults['outside_elements']=outside_elements
@@ -276,7 +278,7 @@ def GenerateMetadata(agresults):
     This should be the same as the input dataset. -99999 indicates an element was not found in the grid.
     """
     df_lonlat=pd.DataFrame(agresults['geopoints'], columns=['LON','LAT'])
-    df_elements = pd.DataFrame(agresults['final_jvals']+1, columns=['ELE+1'])
+    df_elements = pd.DataFrame(agresults['final_jvals']+1, columns=['Element (1-based)'])
     df_elements.replace(-99998,-99999,inplace=True)
     df_meta=pd.concat( [df_lonlat,df_elements], axis=1)
     df_meta['GEOPOINT']=df_meta.index+1
@@ -295,7 +297,7 @@ def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=
     if variable_name is None:
         print('User MUST supply the correct variable name')
         sys.exit(1)
-    print(f'Variable name is {variable_name}')
+    if debug: print(f'Variable name is {variable_name}')
     t0 = tm.time()
     data_list=list()
     final_weights = agresults['final_weights']
@@ -307,11 +309,11 @@ def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=
         advardict = get_adcirc_slice_from_ds(ds,variable_name,it=e[vstation])
         df = pd.DataFrame(advardict['var'])
         data_list.append(df)
-    print(f'Time to fetch annual all test station (triplets) was {tm.time()-t0}s')
+    if debug: print(f'Time to fetch annual all test station (triplets) was {tm.time()-t0}s')
     df_final=WaterLevelReductions(t, data_list, final_weights)
     t0=tm.time()
     df_meta=GenerateMetadata(agresults) # This is here mostly for future considerations
-    print(f'Time to reduce annual {len(final_jvals)} test stations is {tm.time()-t0}s')
+    if debug: print(f'Time to reduce annual {len(final_jvals)} test stations is {tm.time()-t0}s')
     agresults['final_reduced_data']=df_final
     agresults['final_meta_data']=df_meta
     return agresults
@@ -342,12 +344,12 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
     list_data=list()
     list_meta=list()
     start_year,end_year=return_sorted_years(year_tuple)
-    print(f'Final sorted input years {year_tuple}')
-    print(f'Chosen ADCIRC data source {urlfetchdir}')
+    if debug: print(f'Final sorted input years {year_tuple}')
+    print(f'ADCIRC data url = {urlfetchdir}')
     for year in range(start_year,end_year+1):
         print(year)
         url=f'{urlfetchdir % year}/{filename}'
-        print(url)
+        if debug: print(url)
         df_data, df_metadata, df_excluded=Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=nearest_neighbors)
         list_data.append(df_data)
         list_meta.append(df_metadata)
@@ -368,7 +370,7 @@ def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     agdict=get_adcirc_grid_from_ds(ds)
     agdict=attach_element_areas(agdict)
 
-    print('Start annual KDTree pipeline')
+    if debug: print('Start annual KDTree pipeline')
     agdict=ComputeTree(agdict)
     agresults=ComputeQuery(geopoints, agdict, kmax=nearest_neighbors)
     agresults=ComputeBasisRepresentation(geopoints, agdict, agresults)
@@ -376,10 +378,10 @@ def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     ##print('Final set of weights')
     ##print(agresults['final_weights'])
 
-    print(f'Basis function Tolerance value is {TOL}')
-    print(f'List of {len(agresults["outside_elements"])} stations not assigned to any grid element follows for kmax {nearest_neighbors}')
+    if debug: print(f'Basis function Tolerance value is {TOL}')
+    if debug: print(f'List of {len(agresults["outside_elements"])} stations not assigned to any grid element follows for kmax {nearest_neighbors}')
     df_product_data=agresults['final_reduced_data']
     df_product_metadata=agresults['final_meta_data']
     df_excluded_geopoints=pd.DataFrame(geopoints[agresults['outside_elements']], index=agresults['outside_elements']+1, columns=['lon','lat'])
-    print('Finished annual Combined_pipeline')
+    if debug: print('Finished annual Combined_pipeline')
     return df_product_data, df_product_metadata, df_excluded_geopoints

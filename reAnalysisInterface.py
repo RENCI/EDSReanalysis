@@ -179,7 +179,11 @@ class demoInterface():
                 lbl.add_class(f'style_coords')
                 display(lbl)
                 display(df_geopoints)
-   
+                
+            with self.o4:
+                display(HTML('<h2>Diagnostics:</h2>'))
+                display(HTML('<h4>Executing extraction pipeline...</h4>'))
+
         # Clear output of frames before running Combined_multiyear_pipeline 
         self.o4.clear_output()
         self.o5.clear_output()
