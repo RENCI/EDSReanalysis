@@ -20,9 +20,12 @@ from typing import Callable
 from html import escape
 import pandas as pd
 import numpy as np
+import time
 import utilities as utilities
 
 Kmax=10
+Ymin=1979
+Ymax=2019
 
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
@@ -49,41 +52,6 @@ class DownloadFileLink(FileLink):
                         self.html_link_str.format(link=fp, file_name=self.file_name, link_text=self.link_text),
                         self.result_html_suffix])
 
-# class DownloadButton(Button):
-#     """Download button with dynamic content
-
-#     The content is generated using a callback when the button is clicked.
-#     """
-
-#     def __init__(self, filename: str, contents: Callable[[], str], **kwargs):
-#         super().__init__(**kwargs)
-#         #DownloadButton, self
-#         self.filename = filename
-#         self.contents = contents
-#         self.on_click(self.__on_click)
-
-#     def __on_click(self, b):
-#         contents: bytes = self.contents().encode('utf-8')
-#         b64 = base64.b64encode(contents)
-#         payload = b64.decode()
-#         digest = hashlib.md5(contents).hexdigest()  # bypass browser cache
-#         id = f'dl_{digest}'
-#         display(IHTML(f"""
-# <html>
-# <body>
-# <a id="{id}" download="{self.filename}" href="data:text/csv;base64,{payload}" download>
-# </a>
-
-# <script>
-# (function download() {{
-# document.getElementById('{id}').click();
-# }})()
-# </script>
-
-# </body>
-# </html>
-# """))
-
 class demoInterface():
     def __init__(self):
         # Create variable dictionary
@@ -92,6 +60,8 @@ class demoInterface():
         self.vardict['wave height']=   {'filename': 'swan_HS.63_transposed_and_rechunked_1024.nc',  'varname':'swan_HS'}
         self.vardict['wave period']=   {'filename': 'swan_TPS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
         self.vardict['wave direction']={'filename': 'swan_DIR.63_transposed_and_rechunked_1024.nc', 'varname':'swan_DIR'}
+        self.vardict['offset']=        {'filename': 'offset.63.nc',                                 'varname':'offset'}
+
         
         #Create Styles
         style="""
@@ -145,10 +115,10 @@ class demoInterface():
             
         # Add the fileuploader, var_selector, year_selector, and btn to menu section o2
         with self.o2:
-            display(HTML('<h2>User Inputs</h2>'))
+            display(HTML('<h4>User Inputs</h4>'))
             self.fileuploader = FileUpload(accept='', multiple=False)
-            self.var_selector = Dropdown(description='Variable', options=['water level', 'wave height', 'wave period', 'wave direction'])
-            self.year_selector=IntRangeSlider(value=[1979, 2021],min=1979,max=2021,step=1,description='Years:',
+            self.var_selector = Dropdown(description='Variable', options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
+            self.year_selector=IntRangeSlider(value=[Ymin, Ymin],min=Ymin,max=Ymax,step=1,description='Years:',
                                                     disabled=False,continuous_update=False,orientation='horizontal',
                                                     readout=True,readout_format='d')
             
@@ -157,7 +127,7 @@ class demoInterface():
             
             display(self.fileuploader, self.var_selector, self.year_selector, self.btn)
 
-    # Function which is used to process results
+    # Function which is used to process results    
     def process_submit(self, b):
         if len(self.fileuploader.value)==0:
             # If fileuploader has no values clear output and print warning message
@@ -170,7 +140,6 @@ class demoInterface():
             df_geopoints = pd.read_csv(StringIO(list(self.fileuploader.value.values())[0]['content'].decode('utf-8')))
             geopoints = df_geopoints[['lon','lat']].to_numpy()
 
-        
             # Add df_sites to coordinate output sections o3
             with self.o3:
                 clear_output()
@@ -202,11 +171,14 @@ class demoInterface():
 
         # With redirect_stdout run utilities.Combined_multiyear_pipeline 
         with redirect_stdout(po):
+            start_time=time.time()
             self.df_product_data,self.df_product_metadata,self.df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
                                                                                                                    filename=filename, 
                                                                                                                    variable_name=variable_name,
                                                                                                                    geopoints=geopoints,
                                                                                                                    nearest_neighbors=Kmax)
+            end_time=time.time()
+
 
         # Save df_product_data DataFrame to data.csv, so it can be downloaded using DownloadFileLink.
         self.df_product_data.to_csv('data.csv')
@@ -214,9 +186,12 @@ class demoInterface():
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
             clear_output()
-            display(HTML('<h4>Code Run Output</h4>'))
+            display(HTML('<h4>Diagnostics</h4>'))
             display(po.getvalue())
-        
+            lbl = Label(value=f'{len(self.df_geopoints.index)} points and {year_tuple[1]-year_tuple[0]+1} years Took {end_time-start_time:.1f} secs.')
+            lbl.add_class(f'style_data')
+            display(lbl)
+                        
         # Add product data to output sections o5
         with self.o5:
             clear_output()

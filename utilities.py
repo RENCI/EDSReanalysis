@@ -323,15 +323,18 @@ def return_sorted_years(year_tuple):
     Range of years (inclusive) to test: (start_year,end_year)
     Sort and ensure existence
     """
-    print(year_tuple)
     start_year=year_tuple[0] if year_tuple[0] in YEARS else None
     end_year=year_tuple[1] if year_tuple[1] in YEARS else None
+
     if all(year_tuple):
         year_tuple=tuple(sorted((start_year,end_year)))
     else:
         print(f'One or more specified years are out of range: {year_tuple}')
-        print(f'Choose from only {YEARS}')
+        print(f'Available years = {YEARS}')
         sys.exit(1)
+
+    print(f'Year range: {year_tuple}')
+
     return year_tuple[0],year_tuple[1]
   
 def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, variable_name=None, nearest_neighbors=10, alt_urlsource=None): 
@@ -340,12 +343,15 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
          must provide the associated variable_name for the data product
          May provide an alternative storage location, with caveats, else the TDS server is used.
     """
+    
     urlfetchdir=urldirformat if alt_urlsource is None else alt_urlsource
     list_data=list()
     list_meta=list()
     start_year,end_year=return_sorted_years(year_tuple)
     if debug: print(f'Final sorted input years {year_tuple}')
+    
     print(f'ADCIRC data url = {urlfetchdir}')
+    
     for year in range(start_year,end_year+1):
         print(year)
         url=f'{urlfetchdir % year}/{filename}'
@@ -353,8 +359,10 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
         df_data, df_metadata, df_excluded=Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=nearest_neighbors)
         list_data.append(df_data)
         list_meta.append(df_metadata)
+    
     df_final_data=pd.concat(list_data,axis=0)
     df_final_metadata=pd.concat(list_meta,axis=0)
+    
     return df_final_data, df_final_metadata, df_excluded # Just grab last df_excluded since they are al the same (or should be)
 
 # NOTE We do not need to rebuild the treee for each year since the grid is unchanged.
