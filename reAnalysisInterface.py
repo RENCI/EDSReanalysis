@@ -25,7 +25,7 @@ import utilities as utilities
 
 Kmax=10
 Ymin=1979
-Ymax=2019
+Ymax=2021
 
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
@@ -56,7 +56,7 @@ class demoInterface():
     def __init__(self):
         # Create variable dictionary
         self.vardict={}
-        self.vardict['water level']=   {'filename': 'fort.63_transposed_and_rechunked_1024.nc',     'varname':'zeta'}
+        self.vardict['water level']=   {'filename': 'fort.63.d0.no-unlim.T.rc.nc',     'varname':'zeta'}
         self.vardict['wave height']=   {'filename': 'swan_HS.63_transposed_and_rechunked_1024.nc',  'varname':'swan_HS'}
         self.vardict['wave period']=   {'filename': 'swan_TPS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
         self.vardict['wave direction']={'filename': 'swan_DIR.63_transposed_and_rechunked_1024.nc', 'varname':'swan_DIR'}
@@ -188,7 +188,7 @@ class demoInterface():
             clear_output()
             display(HTML('<h4>Diagnostics</h4>'))
             display(po.getvalue())
-            lbl = Label(value=f'{len(self.df_geopoints.index)} points and {year_tuple[1]-year_tuple[0]+1} years Took {end_time-start_time:.1f} secs.')
+            lbl = Label(value=f'{len(df_geopoints.index)} points and {year_tuple[1]-year_tuple[0]+1} years took {end_time-start_time:.1f} secs.')
             lbl.add_class(f'style_data')
             display(lbl)
                         

@@ -31,7 +31,7 @@ ymax=2021
 YEARS=[item for item in range(ymin, ymax+1)]
 
 # Default standard location is on the primary RENCI TDS
-urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d"
+urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/ec95d/%d"
 
 
