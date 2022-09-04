@@ -163,7 +163,7 @@ def ComputeTree(agdict):
         y=agdict['lat'].values.ravel()
         e=agdict['ele'].values
     except Exception as e:
-        print('Failed in finding lon,lat,ele data in agdict. Perhaps check for preprocesing using attach_element_areas method. {}'.format(e))
+        print('Did not find lon,lat,ele data in agdict.')
         sys.exit(1)
     xe=np.mean(x[e],axis=1)
     ye=np.mean(y[e],axis=1)
@@ -219,7 +219,7 @@ def ComputeBasisRepresentation(xylist, agdict, agresults):
         phival=basis2d(agdict,xylist,j[:,k_value])
         phival_list.append(phival)
         within_interior.append(basis2d_withinElement(phival))
-    #
+    
     #detailed_weights_elements(phival_list, j)
 
     # Second only retain the "interior" results or nans if none
@@ -235,7 +235,7 @@ def ComputeBasisRepresentation(xylist, agdict, agresults):
     agresults['final_weights']=final_weights
     agresults['final_jvals']=final_jvals
     agresults['final_status']=final_status
-    if debug: print(f'Identify best annual basis weights took {tm.time()-t0}s')
+    if debug: print(f'Compute of basis took {tm.time()-t0}s')
     # Keep the list if the user needs to know after the fact
     outside_elements = np.argwhere(np.isnan(final_weights).all(axis=1)).ravel()
     agresults['outside_elements']=outside_elements
@@ -277,23 +277,26 @@ def GenerateMetadata(agresults):
     Here we want to simply assist the user by reporting back the lon/lat values for each geopoint.
     This should be the same as the input dataset. -99999 indicates an element was not found in the grid.
     """
+    
     df_lonlat=pd.DataFrame(agresults['geopoints'], columns=['LON','LAT'])
     df_elements = pd.DataFrame(agresults['final_jvals']+1, columns=['Element (1-based)'])
     df_elements.replace(-99998,-99999,inplace=True)
     df_meta=pd.concat( [df_lonlat,df_elements], axis=1)
-    df_meta['GEOPOINT']=df_meta.index+1
-    df_meta.set_index('GEOPOINT', inplace=True)
+    df_meta['Point']=df_meta.index+1
+    df_meta.set_index('Point', inplace=True)
     df_meta.rename('P{}'.format, inplace=True)
+    
     return df_meta
 
 def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=None): 
     """
-    This method acquires ADCIRC water levels for the list of geopoints/elements (three for the current grids). 
+    This method acquires ADCIRC water levels for the list of geopoints/elements. 
     For each specified point in the grid, the resulting time series' are reduced to a single time series using 
     a (basis2d) weighted sum. For a non-nan value to result in the final data, the product data must:
     1) Be non-nan for each time series at the specified time tick
     2) The test point must be interior to the specified element
     """
+    
     if variable_name is None:
         print('User MUST supply the correct variable name')
         sys.exit(1)
@@ -316,6 +319,7 @@ def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=
     if debug: print(f'Time to reduce annual {len(final_jvals)} test stations is {tm.time()-t0}s')
     agresults['final_reduced_data']=df_final
     agresults['final_meta_data']=df_meta
+    
     return agresults
 
 def return_sorted_years(year_tuple):
@@ -365,7 +369,7 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
     
     return df_final_data, df_final_metadata, df_excluded # Just grab last df_excluded since they are al the same (or should be)
 
-# NOTE We do not need to rebuild the treee for each year since the grid is unchanged.
+# NOTE We do not need to rebuild the tree for each year since the grid is unchanged.
 def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     """
     Interpolate for one year. 
@@ -383,8 +387,6 @@ def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     agresults=ComputeQuery(geopoints, agdict, kmax=nearest_neighbors)
     agresults=ComputeBasisRepresentation(geopoints, agdict, agresults)
     agresults=ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=variable_name)
-    ##print('Final set of weights')
-    ##print(agresults['final_weights'])
 
     if debug: print(f'Basis function Tolerance value is {TOL}')
     if debug: print(f'List of {len(agresults["outside_elements"])} stations not assigned to any grid element follows for kmax {nearest_neighbors}')
@@ -392,4 +394,5 @@ def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     df_product_metadata=agresults['final_meta_data']
     df_excluded_geopoints=pd.DataFrame(geopoints[agresults['outside_elements']], index=agresults['outside_elements']+1, columns=['lon','lat'])
     if debug: print('Finished annual Combined_pipeline')
+    
     return df_product_data, df_product_metadata, df_excluded_geopoints

@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 '''
 
 import base64, hashlib, sys
-from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider
+from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider, Text
 from IPython.display import display, FileLink, clear_output, HTML as IHTML
 from collections import namedtuple
 from io import StringIO
@@ -26,6 +26,10 @@ import utilities as utilities
 Kmax=10
 Ymin=1979
 Ymax=2021
+
+
+dataurl="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
+
 
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
@@ -57,10 +61,11 @@ class demoInterface():
         # Create variable dictionary
         self.vardict={}
         self.vardict['water level']=   {'filename': 'fort.63.d0.no-unlim.T.rc.nc',     'varname':'zeta'}
-        self.vardict['wave height']=   {'filename': 'swan_HS.63_transposed_and_rechunked_1024.nc',  'varname':'swan_HS'}
-        self.vardict['wave period']=   {'filename': 'swan_TPS.63_transposed_and_rechunked_1024.nc', 'varname':'swan_TPS'}
-        self.vardict['wave direction']={'filename': 'swan_DIR.63_transposed_and_rechunked_1024.nc', 'varname':'swan_DIR'}
-        self.vardict['offset']=        {'filename': 'offset.63.nc',                                 'varname':'offset'}
+#        self.vardict['water level']=   {'filename': 'fort.63.nc',     'varname':'zeta'}
+        self.vardict['wave height']=   {'filename': 'swan_HS.63.d0.no-unlim.T.rc.nc',  'varname':'swan_HS'}
+        self.vardict['wave period']=   {'filename': 'swan_TPS.63.d0.no-unlim.T.rc.nc', 'varname':'swan_TPS'}
+        self.vardict['wave direction']={'filename': 'swan_DIR.63.d0.no-unlim.T.rc.nc', 'varname':'swan_DIR'}
+        self.vardict['offset']=        {'filename': 'offset.63.d0.no-unlim.T.rc.nc',   'varname':'offset'}
 
         
         #Create Styles
@@ -70,12 +75,12 @@ class demoInterface():
                 .container { width:1020 !important; } 
                 
                 /* styles for output widgets */
-                .o2 {width:400px; border:1px solid #ddd}
-                .o3 {width:400px; border:1px solid #ddd}
-                .o4 {width:400px; border:1px solid #ddd}
-                .o5 {width:400px; border:1px solid #ddd}
-                .o6 {width:400px; border:1px solid #ddd}
-                .o7 {width:400px; border:1px solid #ddd}
+                .o2 {width:400px; border:2px solid #00F}
+                .o3 {width:400px; border:2px solid #00F}
+                .o4 {width:400px; border:2px solid #00F}
+                .o5 {width:400px; border:2px solid #ddd}
+                .o6 {width:400px; border:2px solid #ddd}
+                .o7 {width:400px; border:2px solid #ddd}
                 
                 .style_coords {background-color:#fafaaa}
                 .style_data {background-color:#faaafa}
@@ -88,7 +93,8 @@ class demoInterface():
         display(HTML(style))
         
         #Create interface sections
-        self.o1 = Output(layout=Layout(width='500px'))        
+        self.o1 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
+        self.o8 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
         self.o2 = Output() 
         self.o2.add_class('o2')
         self.o3 = Output()
@@ -103,7 +109,7 @@ class demoInterface():
         self.o7.add_class('o7')
 
         # Combine interface sections, using VBox, and HBox, to scene and display
-        scene = VBox([self.o1,
+        scene = VBox([self.o1,self.o8,
                       HBox([self.o2, self.o3, self.o4]),
                       HBox([self.o5, self.o6, self.o7])
                      ])
@@ -111,22 +117,46 @@ class demoInterface():
     
         # Add title to header section o1
         with self.o1:
-            display(HTML('<h2>Main Title</h2>'))
+            display(HTML('<center><h2>Reanalysis Timeseries Extractor Demonstrator</h2></center>'))
+            
+        with self.o8:
+            self.dataurl=Text(value=dataurl,
+                                  placeholder='',
+                                  description='Data Url:',
+                                  disabled=False)
+            self.dataurl.layout = Layout(width='600px')
+            display(self.dataurl)
             
         # Add the fileuploader, var_selector, year_selector, and btn to menu section o2
         with self.o2:
-            display(HTML('<h4>User Inputs</h4>'))
-            self.fileuploader = FileUpload(accept='', multiple=False)
-            self.var_selector = Dropdown(description='Variable', options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
-            self.year_selector=IntRangeSlider(value=[Ymin, Ymin],min=Ymin,max=Ymax,step=1,description='Years:',
-                                                    disabled=False,continuous_update=False,orientation='horizontal',
-                                                    readout=True,readout_format='d')
+            display(HTML('<h3>User Inputs</h3>'))
+            self.fileuploader = FileUpload(accept='', multiple=False, description='Point File Upload:')
+            self.fileuploader.layout = Layout(width='50%')
+            self.var_selector = Dropdown(description='Variable:', 
+                                         options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
+            self.year_selector=IntRangeSlider(value=[Ymin, Ymin],min=Ymin,max=Ymax,step=1,
+                                              description='Years:',
+                                              disabled=False,continuous_update=False,orientation='horizontal',
+                                              readout=True,readout_format='d')
+            #self.year_selector.layout = Layout(width='50%')
+
             
             self.btn = Button(description='Submit')
+            self.outfilename=Text(value='data.csv',
+                                  placeholder='data.csv',
+                                  description='Output Filename:',
+                                  disabled=False)
+            
             self.btn.on_click(self.process_submit)
             
-            display(self.fileuploader, self.var_selector, self.year_selector, self.btn)
+            display(self.fileuploader, self.var_selector, self.year_selector, self.outfilename, self.btn)
 
+    # set the output filename according to input selections
+    # temp=self.var_selector.value
+    # y0=year_selector.value[0]
+    # y1=self.year_selector.value[1]
+    # self.outfilename.value=f'{temp}_{y0}_{y1}.csv'
+            
     # Function which is used to process results    
     def process_submit(self, b):
         if len(self.fileuploader.value)==0:
@@ -137,17 +167,17 @@ class demoInterface():
             return
         else:
             # If fileloader has values extract coordinates and input to variable sites
-            df_geopoints = pd.read_csv(StringIO(list(self.fileuploader.value.values())[0]['content'].decode('utf-8')))
-            geopoints = df_geopoints[['lon','lat']].to_numpy()
+            df_points = pd.read_csv(StringIO(list(self.fileuploader.value.values())[0]['content'].decode('utf-8')))
+            points = df_points[['lon','lat']].to_numpy()
 
             # Add df_sites to coordinate output sections o3
             with self.o3:
                 clear_output()
                 display(HTML('<h4>List of Stations Uploaded</h4>'))
-                lbl = Label(value=f'There are {len(df_geopoints.index)} coordinate pair(s)')
+                lbl = Label(value=f'There are {len(df_points.index)} coordinate pair(s)')
                 lbl.add_class(f'style_coords')
                 display(lbl)
-                display(df_geopoints)
+                display(df_points)
                 
             with self.o4:
                 display(HTML('<h2>Diagnostics:</h2>'))
@@ -169,26 +199,31 @@ class demoInterface():
         # Create variable to output print statements from utilities.Combined_multiyear_pipeline
         po = StringIO()
 
+        dataurl=self.dataurl.value
+        with self.o4:
+            display(dataurl)
+            
         # With redirect_stdout run utilities.Combined_multiyear_pipeline 
         with redirect_stdout(po):
             start_time=time.time()
             self.df_product_data,self.df_product_metadata,self.df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
                                                                                                                    filename=filename, 
                                                                                                                    variable_name=variable_name,
-                                                                                                                   geopoints=geopoints,
-                                                                                                                   nearest_neighbors=Kmax)
+                                                                                                                   geopoints=points,
+                                                                                                                   nearest_neighbors=Kmax,
+                                                                                                                   alt_urlsource=dataurl)
             end_time=time.time()
 
 
         # Save df_product_data DataFrame to data.csv, so it can be downloaded using DownloadFileLink.
-        self.df_product_data.to_csv('data.csv')
+        self.df_product_data.to_csv(self.outfilename.value) 
 
         # Output print statements from utilities.Combined_multiyear_pipeline to data frame
         with self.o4:
             clear_output()
             display(HTML('<h4>Diagnostics</h4>'))
             display(po.getvalue())
-            lbl = Label(value=f'{len(df_geopoints.index)} points and {year_tuple[1]-year_tuple[0]+1} years took {end_time-start_time:.1f} secs.')
+            lbl = Label(value=f'{len(df_points.index)} points and {year_tuple[1]-year_tuple[0]+1} years took {end_time-start_time:.1f} secs.')
             lbl.add_class(f'style_data')
             display(lbl)
                         
@@ -226,6 +261,6 @@ class demoInterface():
             display(lbl)
             se = StringIO()
             self.df_excluded.to_csv(se)
-            display(create_download_link(self.df_excluded, 'excluded_geopoints.csv'))
+            display(create_download_link(self.df_excluded, 'excluded_points.csv'))
             display(self.df_excluded)
 
