@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 '''
 
 import base64, hashlib, sys
-from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider, Text
+from ipywidgets import HBox, VBox, Output, HTML, Dropdown, Button, Layout, Label, FileUpload, IntRangeSlider, Text, ToggleButtons
 from IPython.display import display, FileLink, clear_output, HTML as IHTML
 from collections import namedtuple
 from io import StringIO
@@ -23,13 +23,11 @@ import numpy as np
 import time
 import utilities as utilities
 
-Kmax=10
-Ymin=1979
-Ymax=2021
+Kmax=utilities.Kmax
+Ymin=utilities.Ymin
+Ymax=utilities.Ymax
 
-
-dataurl="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
-
+dataurl=utilities.urldirformat
 
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
@@ -58,14 +56,15 @@ class DownloadFileLink(FileLink):
 
 class demoInterface():
     def __init__(self):
+        fileext='.d0.no-unlim.T.rc.nc'
         # Create variable dictionary
         self.vardict={}
-        self.vardict['water level']=   {'filename': 'fort.63.d0.no-unlim.T.rc.nc',     'varname':'zeta'}
+        self.vardict['water level']=   {'filename': 'fort.63'+fileext,      'varname':'zeta'}
 #        self.vardict['water level']=   {'filename': 'fort.63.nc',     'varname':'zeta'}
-        self.vardict['wave height']=   {'filename': 'swan_HS.63.d0.no-unlim.T.rc.nc',  'varname':'swan_HS'}
-        self.vardict['wave period']=   {'filename': 'swan_TPS.63.d0.no-unlim.T.rc.nc', 'varname':'swan_TPS'}
-        self.vardict['wave direction']={'filename': 'swan_DIR.63.d0.no-unlim.T.rc.nc', 'varname':'swan_DIR'}
-        self.vardict['offset']=        {'filename': 'offset.63.d0.no-unlim.T.rc.nc',   'varname':'offset'}
+        self.vardict['wave height']=   {'filename': 'swan_HS.63'+fileext,   'varname':'swan_HS'}
+        self.vardict['wave period']=   {'filename': 'swan_TPS.63'+fileext,  'varname':'swan_TPS'}
+        self.vardict['wave direction']={'filename': 'swan_DIR.63'+fileext,  'varname':'swan_DIR'}
+        self.vardict['offset']=        {'filename': 'offset.63'+fileext, 'varname':'offset'}
 
         
         #Create Styles
@@ -95,6 +94,7 @@ class demoInterface():
         #Create interface sections
         self.o1 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
         self.o8 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
+        self.o9 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
         self.o2 = Output() 
         self.o2.add_class('o2')
         self.o3 = Output()
@@ -108,8 +108,8 @@ class demoInterface():
         self.o7 = Output()
         self.o7.add_class('o7')
 
-        # Combine interface sections, using VBox, and HBox, to scene and display
-        scene = VBox([self.o1,self.o8,
+        # Combine interface sections, using VBox and HBox, to scene and display
+        scene = VBox([self.o1,self.o8,self.o9,
                       HBox([self.o2, self.o3, self.o4]),
                       HBox([self.o5, self.o6, self.o7])
                      ])
@@ -124,16 +124,33 @@ class demoInterface():
                                   placeholder='',
                                   description='Data Url:',
                                   disabled=False)
-            self.dataurl.layout = Layout(width='600px')
+            self.dataurl.layout = Layout(width='550px')
             display(self.dataurl)
             
+#         with self.o8:
+#             self.dataurl=Text(value=dataurl,
+#                                   placeholder='',
+#                                   description='Data Url:',
+#                                   disabled=False)
+#             self.dataurl.layout = Layout(width='550px')
+#             display(self.dataurl)
+             
         # Add the fileuploader, var_selector, year_selector, and btn to menu section o2
         with self.o2:
             display(HTML('<h3>User Inputs</h3>'))
             self.fileuploader = FileUpload(accept='', multiple=False, description='Point File Upload:')
             self.fileuploader.layout = Layout(width='50%')
-            self.var_selector = Dropdown(description='Variable:', 
-                                         options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
+            # self.var_selector = Dropdown(description='Variable:', 
+            #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
+            self.var_selector = ToggleButtons(
+                                         options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'],
+                                description='Variable:',
+                                disabled=False,
+                                button_style='', # 'success', 'info', 'warning', 'danger' or ''
+                                #tooltips=['Description of slow', 'Description of regular', 'Description of fast'],
+                                #icons=['check'] * 3
+            )
+            
             self.year_selector=IntRangeSlider(value=[Ymin, Ymin],min=Ymin,max=Ymax,step=1,
                                               description='Years:',
                                               disabled=False,continuous_update=False,orientation='horizontal',

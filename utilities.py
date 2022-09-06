@@ -20,15 +20,15 @@ from datetime import date, datetime
 import time as tm
 
 #print("utilities:Xarray Version = {}".format(xr.__version__))
-
+Kmax=10
 got_kdtree=None
 TOL=10e-5
 debug=False
 
 # Specify available reanalysis years
-ymin=1979
-ymax=2021
-YEARS=[item for item in range(ymin, ymax+1)]
+Ymin=1979
+Ymax=2021
+YEARS=[item for item in range(Ymin, Ymax+1)]
 
 # Default standard location is on the primary RENCI TDS
 urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
@@ -156,7 +156,7 @@ def ComputeTree(agdict):
     returns agdict with tree
     """
 
-    global got_kdtree # Try not too if already done
+    global got_kdtree # Try not to if already done
     t0=tm.time()
     try:
         x=agdict['lon'].values.ravel() # ravel; not needed
