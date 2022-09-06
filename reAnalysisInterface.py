@@ -78,9 +78,9 @@ class demoInterface():
                 .o2 {width:400px; border:2px solid #00F}
                 .o3 {width:400px; border:2px solid #00F}
                 .o4 {width:400px; border:2px solid #00F}
-                .o5 {width:400px; border:2px solid #ddd}
-                .o6 {width:400px; border:2px solid #ddd}
-                .o7 {width:400px; border:2px solid #ddd}
+                .o5 {width:400px; border:2px solid #00F}
+                .o6 {width:400px; border:2px solid #00F}
+                .o7 {width:400px; border:2px solid #00F}
                 
                 .style_coords {background-color:#fafaaa}
                 .style_data {background-color:#faaafa}
