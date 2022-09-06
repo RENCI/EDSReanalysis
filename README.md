@@ -1,2 +1,2 @@
 # EDSReanalysis
-Repo of helper functions for ADCIRC geopoint to product codes
+Demonstration functions for extracting timeseries from the RENCI/NOAA Reanalysis datasets
