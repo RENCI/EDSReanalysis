@@ -59,12 +59,11 @@ class demoInterface():
         fileext='.d0.no-unlim.T.rc.nc'
         # Create variable dictionary
         self.vardict={}
-        self.vardict['water level']=   {'filename': 'fort.63'+fileext,      'varname':'zeta'}
-#        self.vardict['water level']=   {'filename': 'fort.63.nc',     'varname':'zeta'}
-        self.vardict['wave height']=   {'filename': 'swan_HS.63'+fileext,   'varname':'swan_HS'}
-        self.vardict['wave period']=   {'filename': 'swan_TPS.63'+fileext,  'varname':'swan_TPS'}
-        self.vardict['wave direction']={'filename': 'swan_DIR.63'+fileext,  'varname':'swan_DIR'}
-        self.vardict['offset']=        {'filename': 'offset.63'+fileext, 'varname':'offset'}
+        self.vardict['water level']=   {'filename': 'fort.63'+fileext,     'varname':'zeta'}
+        #self.vardict['wave height']=   {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
+        #self.vardict['wave period']=   {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
+        #self.vardict['wave direction']={'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
+        self.vardict['offset']=        {'filename': 'offset.63'+fileext,   'varname':'offset'}
 
         
         #Create Styles
@@ -124,7 +123,7 @@ class demoInterface():
                                   placeholder='',
                                   description='Data Url:',
                                   disabled=False)
-            self.dataurl.layout = Layout(width='550px')
+            self.dataurl.layout = Layout(width='1000px')
             display(self.dataurl)
             
 #         with self.o8:
@@ -143,7 +142,8 @@ class demoInterface():
             # self.var_selector = Dropdown(description='Variable:', 
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
-                                         options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'],
+                                #options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'],
+                                options=['water level', 'offset'],
                                 description='Variable:',
                                 disabled=False,
                                 button_style='', # 'success', 'info', 'warning', 'danger' or ''
@@ -159,6 +159,8 @@ class demoInterface():
 
             
             self.btn = Button(description='Submit')
+            self.btn.style.button_color = 'lightgreen'
+
             self.outfilename=Text(value='data.csv',
                                   placeholder='data.csv',
                                   description='Output Filename:',

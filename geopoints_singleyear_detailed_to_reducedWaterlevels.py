@@ -8,7 +8,7 @@ import time as tm
 import utilities as utilities
 
 #urldirformat="/projects/reanalysis/ADCIRC/ERA5/hsofs/%d"
-urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d"
+urldirformat=utilities.urldirformat  # ="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d"
 
 def main(args):
     """
@@ -53,8 +53,8 @@ def main(args):
 ##
 ## For future ref what geopoints were not assigned to any element
 ##
-    print(f'List of {len(agresults["outside_elements"])} stations not assigned to any grid element follows for kmax {nearest_neighbors}')
-    print('List of geopoints determined to not be within any element for kmax={}, {}'.format(nearest_neighbors,df_geopoints.loc[agresults['outside_elements']]))
+    print(f'List of {len(agresults["outside_elements"])} points not assigned to any grid element follows for kmax={nearest_neighbors}')
+    print('List of points determined to not be within any element for kmax={}, {}'.format(nearest_neighbors,df_geopoints.loc[agresults['outside_elements']]))
 
 ##
 ## Assemble data for storage
