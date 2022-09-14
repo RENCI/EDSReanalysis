@@ -59,11 +59,11 @@ class demoInterface():
         fileext='.d0.no-unlim.T.rc.nc'
         # Create variable dictionary
         self.vardict={}
-        self.vardict['water level']=   {'filename': 'fort.63'+fileext,     'varname':'zeta'}
-        #self.vardict['wave height']=   {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
-        #self.vardict['wave period']=   {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
-        #self.vardict['wave direction']={'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
-        self.vardict['offset']=        {'filename': 'offset.63'+fileext,   'varname':'offset'}
+        self.vardict['Water Level']=   {'filename': 'fort.63'+fileext,     'varname':'zeta'}
+        self.vardict['Wave Height']=   {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
+        self.vardict['Wave Period']=   {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
+        self.vardict['Wave Direction']={'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
+        self.vardict['Dynamic Correction']=        {'filename': 'offset.63'+fileext,   'varname':'offset'}
 
         
         #Create Styles
@@ -73,12 +73,12 @@ class demoInterface():
                 .container { width:1020 !important; } 
                 
                 /* styles for output widgets */
-                .o2 {width:400px; border:2px solid #00F}
-                .o3 {width:400px; border:2px solid #00F}
-                .o4 {width:400px; border:2px solid #00F}
-                .o5 {width:400px; border:2px solid #00F}
-                .o6 {width:400px; border:2px solid #00F}
-                .o7 {width:400px; border:2px solid #00F}
+                .o2 {width:400px; border:2px solid #000}
+                .o3 {width:400px; border:2px solid #000}
+                .o4 {width:400px; border:2px solid #000}
+                .o5 {width:400px; border:2px solid #000}
+                .o6 {width:400px; border:2px solid #000}
+                .o7 {width:400px; border:2px solid #000}
                 
                 .style_coords {background-color:#fafaaa}
                 .style_data {background-color:#faaafa}
@@ -91,9 +91,9 @@ class demoInterface():
         display(HTML(style))
         
         #Create interface sections
-        self.o1 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
-        self.o8 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
-        self.o9 = Output(layout=Layout(width='1210px',  border='2px solid #00F'))        
+        self.o1 = Output(layout=Layout(width='1210px',  border='2px solid #000'))        
+        self.o8 = Output(layout=Layout(width='1210px',  border='2px solid #000'))        
+        self.o9 = Output(layout=Layout(width='1210px',  border='2px solid #000'))        
         self.o2 = Output() 
         self.o2.add_class('o2')
         self.o3 = Output()
@@ -142,8 +142,8 @@ class demoInterface():
             # self.var_selector = Dropdown(description='Variable:', 
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
-                                #options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'],
-                                options=['water level', 'offset'],
+                                options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
+                                #options=['water level', 'offset'],
                                 description='Variable:',
                                 disabled=False,
                                 button_style='', # 'success', 'info', 'warning', 'danger' or ''
