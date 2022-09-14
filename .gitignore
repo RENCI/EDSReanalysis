@@ -1,5 +1,8 @@
 Untitled*
 data.csv
 meta.csv
+excluded_geopoints.csv
 .ipynb_c*/
 __pycache__/
+*~
+
