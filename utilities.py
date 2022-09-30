@@ -361,7 +361,7 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
         url=f'{urlfetchdir % year}/{filename}'
         if debug: print(url)
         df_data, df_metadata, df_excluded=Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=nearest_neighbors)
-        list_data.append(df_data)
+        list_data.append(df_data).loc[str(year)]) # Remove any flanks that may exist
         list_meta.append(df_metadata)
     
     df_final_data=pd.concat(list_data,axis=0)
@@ -377,6 +377,7 @@ def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     df_excluded_geopoints lists only those stations excluded by element tests. 
     Some could be all nans due to dry points
 
+    No flanks removed in this method as the caller may want to see everything
     """
     ds = f63_to_xr(url)
     agdict=get_adcirc_grid_from_ds(ds)
