@@ -361,9 +361,13 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
         url=f'{urlfetchdir % year}/{filename}'
         if debug: print(url)
         df_data, df_metadata, df_excluded=Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=nearest_neighbors)
-        list_data.append(df_data.loc[str(year)]) # Remove any flanks that may exist
+        #list_data.append(df_data.loc[str(year)]) # Remove any flanks that may exist
+        try:
+            list_data.append(df_data.loc[f'{year}':f'{year+1}-01-01 00:00:00']) # Try to also include the first hour of the next year
+        except Exception as e:
+            print(f'Failed trying to apply bounds {e}')
+            sys.exit(1)
         list_meta.append(df_metadata)
-    
     df_final_data=pd.concat(list_data,axis=0)
     df_final_metadata=pd.concat(list_meta,axis=0)
     
