@@ -7,17 +7,24 @@ import numpy as np
 import time as tm
 import random
 import utilities as utilities
+import matplotlib.pyplot as plt
 
 # Specify available reanalysis years
 ymin=1979
-ymax=2021
+ymin=2020
+ymax=2020
 YEARS=[item for item in range(ymin, ymax+1)]
 
 # How many geopoints ot test with ?
-POINTS=[10,50,100,500,1000,5000,10000]
+POINTS=[10000] #10,50,100,500,1000,5000,10000]
 
 # Choose URLs type:
-urlformat='/projects/reanalysis/ADCIRC/ERA5/hsofs/%s/fort.63_transposed_and_rechunked_1024.nc'
+urlformat='/projects/reanalysis/ADCIRC/ERA5/hsofs/%s/fort.63.d0.no-unlim.T.rc.nc'
+#urlformat='/projects/reanalysis/ADCIRC/ERA5/hsofs/%s/fort.63_transposed_and_rechunked_1024.nc'
+
+#urlformat='http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d/fort.63.d0.no-unlim.T.rc.nc'
+urlformat='/projects/reanalysis/ADCIRC/ERA5/hsofs/%d/fort.63.d0.no-unlim.T.rc.nc'
+
 variable_name='zeta'
 #urlformat='/projects/reanalysis/ADCIRC/ERA5/hsofs/%s/swan_HS.63_transposed_and_rechunked_1024.nc'
 #variable_name='swan_HS'
@@ -55,7 +62,7 @@ print(y)
 
 # Plot the data
 #plt.scatter(*zip(*runtimes))
-plt.plot(*zip(*runtimes))
+#plt.plot(*zip(*runtimes))
 #plt.title('HSOFS: Reanalysis: Single year: geopoints to reduced WL')
 #plt.xlabel('Number of geopoints')
 #plt.xlim(0,5000)

@@ -24,13 +24,15 @@ def main(args):
 ## 
 ## Run the full pipeline
 ##
-    year_tuple=(1979,1982)
+    year_tuple=(1979,1981)
+    year_tuple=(2014,2014)
     df_product_data, df_product_metadata, df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,filename=filename, variable_name=variable_name,geopoints=geopoints,nearest_neighbors=nearest_neighbors, alt_urlsource=args.alt_urlsource)
     df_product_data.to_csv('data.csv',header=True)
     df_product_metadata.to_csv('meta.csv',header=True)
     print(df_excluded)
     df_excluded.to_csv('excluded_geopoints.csv')
     print(df_product_data)
+    df_product_data.to_pickle('test.pkl')
     print('Finished')
 
 if __name__ == '__main__':
