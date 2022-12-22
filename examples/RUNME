@@ -3,24 +3,35 @@
 
 # Defaults to the TDS to fetch ADCIRC data
 
-python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
-python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_HS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_HS.63.d0.no-unlim.T.rc.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
 python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_TPS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_TPS' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
 python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_DIR.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_DIR' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
 
 # Simple approach but alternative (eg local) adcirc data source
 
-python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --alt_urlsource '/projects/reanalysis/ADCIRC/ERA5/hsofs/%d'
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --alt_urlsource '/projects/reanalysis/ADCIRC/ERA5/hsofs/%d'
 
 # Run the more detailed script
 # This approach exposes more details about how the procedure is invoked and allows more advanced users to have more control over the process
 
-python ../geopoints_singleyear_detailed_to_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv'  --year 2018
-python ../geopoints_singleyear_detailed_to_reducedWaterlevels.py --filename 'swan_HS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --year 2018
+python ../geopoints_singleyear_detailed_to_reducedWaterlevels.py --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv'  --year 2018
+python ../geopoints_singleyear_detailed_to_reducedWaterlevels.py --filename 'swan_HS.63.d0.no-unlim.T.rc.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv' --year 2018
 
 # Use a larger input geopoints file
-python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63_transposed_and_rechunked_1024.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_500grid_lonlat.csv' --kmax=10
+python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_500grid_lonlat.csv' --kmax=10
 
 
+# Use a larger input geopoints file
+python ./geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile './testdata/hsofs_example_geopoints.csv' --kmax=10 --alt_urlsource '/projects/reanalysis/ADCIRC/ERA5/hsofs/%d'
 
+
+# Execute the single year test code grabbing data from TDS
+python ./geopoints_simple_singleyear_reducedWaterlevels.py --year 2010 --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile './testdata/hsofs_example_geopoints.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
+
+# Execute the single year test code grabbing data from the LOCAL FS /projects/reanalysis/ADCIRC/ERA5/hsofs
+python ./geopoints_simple_singleyear_reducedWaterlevels.py --year 2010 --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile './testdata/hsofs_example_geopoints.csv' --kmax=10 --alt_urlsource '/projects/reanalysis/ADCIRC/ERA5/hsofs/%d'
+
+
+swan_HS.63.d0.no-unlim.T.rc.nc
 
