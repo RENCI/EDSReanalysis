@@ -1,0 +1,40 @@
+This subdirectory illustrates how a user may want to fetch water levels using the EDSReanaysis utilities. 
+This example is designed to illustrate how a user may query all 43 yearly anual datasets and assemble the results into a single
+data file. These are small test codes used to testing the code and have not been hardened for general distributon and use.
+The number of output lat/lon pairs always equals the number inputted (and in the same input sort order) regardless of data missingness status
+
+# Basic approach
+The basic idea is that each year gets processed independantly. Thus a user could launch an ensemble of slurm jobs if such 
+a system is available. Otherwise, a user can simply run the example scripts in a linux shell.
+The simple scripts (iterate_geopoints.sh, iterate_geopoints_slurm.sh) iterate over the years and invokes the RUNME_slurm script for each year.
+The RUNME_slurm script DOES NOT need to actually be passed to slurm and could be invoked on te commad line. If you do choose to launch to 
+a slurm system, you will likely need to modify the #SLURM comands to suite your environment
+
+The distinction between the "firstyear" and the remaining years in the list of years is simply to  specify column headers to be included 
+in the  .csv file for the first year. This allows the user to easily 'linux cat' files together. This specification is not a requirement of the 
+processing.
+
+# Behaviors
+
+The EDSReanalysis utilities is intended to be used by users that wish to provide an arbitrary list of lat/lons and have appropriately derived weighted waer level 
+means to be returned. For example, given a lat/lon pair, the nearest ADCIRC irregular grid tirnagle (element) is identifuedFor example, given a lat/lon pair, 
+the nearest ADCIRC irregular grid triangle (element) is identified. Then the three vetices definng that element are used to build basis functions (weights)
+and the final lat/lon weighted mean is computed.
+
+# Missingness
+
+A non-zero water level value will be returned under the following rigorous conditions:
+    1) The input lat/lon pair must be WITHIN a grid triangle. (else all nans)
+    2) For each hourly time step, all three triangle vertices must have data. Otherwise the weighting scheme gets problematic. This can result in a
+       returned lat/lon time series with blocks of nans Eg, if one vertex periodically goes dry.
+
+# Point to ponder
+
+This code can be used to fetch water level data for the actual grid points (vertices) but some unexpected bahaviors can occur. For example, if you 
+specify the actual lat/lon of a vertex, then generally, that point is shared by many triangle elements. The algorithm often cannot determine which element
+is "best" and so simply chooses the first element on its list. This is fine, since the weighting algorithm will very heavily bias (weight)  the input point data
+and return the actual point data.
+However, if that choosen triangle contains a "dry" node or a vertex with periodic missingness, than the output water level will also have that missingness 
+structure independant of the weights
+
+

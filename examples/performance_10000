@@ -1,0 +1,20 @@
+input URL selected /projects/reanalysis/ADCIRC/ERA5/hsofs/%d/fort.63.d0.no-unlim.T.rc.nc
+Geopoints coming from the file ./testdata/hsofs_fullgrid_lonlat.csv
+               lon        lat
+0       -91.196021  30.424800
+1       -91.193699  30.423873
+2       -91.198342  30.425727
+3       -91.200664  30.426654
+4       -91.202985  30.427581
+...            ...        ...
+1813438 -92.988710  30.236592
+1813439 -92.985974  30.233535
+1813440 -92.992757  30.236851
+1813441 -92.991055  30.233380
+1813442 -92.996139  30.233416
+
+[1813443 rows x 2 columns]
+numpoints 10000 year 2020
+Number of input geopoints is 10000
+[(10000, 4262.282851457596)]
+[0.42622828514575956]
