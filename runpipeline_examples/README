@@ -28,7 +28,7 @@ A non-zero water level value will be returned under the following rigorous condi
     2) For each hourly time step, all three triangle vertices must have data. Otherwise the weighting scheme gets problematic. This can result in a
        returned lat/lon time series with blocks of nans Eg, if one vertex periodically goes dry.
 
-# Point to ponder
+# Points to consider
 
 This code can be used to fetch water level data for the actual grid points (vertices) but some unexpected bahaviors can occur. For example, if you 
 specify the actual lat/lon of a vertex, then generally, that point is shared by many triangle elements. The algorithm often cannot determine which element
@@ -36,5 +36,47 @@ is "best" and so simply chooses the first element on its list. This is fine, sin
 and return the actual point data.
 However, if that choosen triangle contains a "dry" node or a vertex with periodic missingness, than the output water level will also have that missingness 
 structure independant of the weights
+
+# Usage 
+
+Modification of the example codes to perform a couple of runs is easy.
+
+1) First decice if you wat to run as a shell or launch te jobs to slurm.
+   iterate_geopoints.sh: For shell executions
+   iterate_geopoints_slurm.sh: For slurm runs. You will need to modify this file for your particular environment
+
+2) Modify RUNME_slurm. This aplies to either slurm or shell executions
+   The only variable that requires changing is: -geopointsfile '../testdata/NOAA_Stations_141.csv'. Modify this to point to your
+   desired list of lat/lon points to process 
+
+Each year of calculation return 4 files: Eg for the year 1979 one gets: 1979_meta.csv,1979_data.csv,1979_data.pkl,1979_excluded_geopoints.csv
+   1979_data.csv is the csv file of return water levels for the input lat/lons.
+   The column names are 'P' with an integer indicating order in the input file (1,2,,,,n)
+  
+   1979_meta.csv: Returns a map of the input lat/lon points, to the internaly generated points name (Eg P1) and the grid element number
+   it is associated with. Generally these should be the same for each year and do not need to be aggregated
+
+   #Point,LON,LAT,Element (1-based)
+   #P1,-64.70330600000001,32.373389,2934241
+   #P2,-66.982315,44.9033,2034577
+   #P3,-67.188497,44.64945,2455043 
+
+   1979_data.pkl  is the pickle formatted version of 1979_data.csv. The time indexing are datetime stamps.
+   You will need to write python code to aggregate these. (Eg just do a pd.concat([year,year...],axis=0)
+ 
+   1979_excluded_geopoints.csv lists any lat/lon points that were not asociated with any triangle element
+   NOTE: Though technically excluded, the empty column wil be retained in the output file and in the correct placement 
+   relative to the input list
+
+# Input lat/lon datafile format
+
+  The input format is straightforward. The only mandatory entries are index,lon,lat
+  The values of the index are irrelevant but it must exist. The lon/lat columns are as expected
+
+  #,lon,lat
+  #0,-91.816161,30.943519
+  #1,-79.6725155674,32.8596518752
+
+
 
 

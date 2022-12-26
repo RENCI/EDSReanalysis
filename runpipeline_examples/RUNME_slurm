@@ -12,7 +12,7 @@ keep_headers=$2
 export PYTHONPATH=/projects/sequence_analysis/vol1/prediction_work/EDSReanalysis
 
 if [ "$keep_headers" == "1" ]; then
-    python ../examples/geopoints_simple_singleyear_reducedWaterlevels.py --keep_headers --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/NOAA_Stations_141.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
+    python ../examples/geopoints_simple_singleyear_reducedWaterlevels.py --keep_headers --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/testdata/NOAA_Stations_141.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
 else
-    python ../examples//geopoints_simple_singleyear_reducedWaterlevels.py --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/NOAA_Stations_141.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
+    python ../examples//geopoints_simple_singleyear_reducedWaterlevels.py --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/testdata/NOAA_Stations_141.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
 fi
