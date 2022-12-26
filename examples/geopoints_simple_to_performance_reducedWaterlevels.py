@@ -33,7 +33,7 @@ print(f'input URL selected {urlformat}')
 
 # Read in previously saved hsofs grid points from an ADCIRC file as geopoints
 
-geopointsfile='hsofs_fullgrid_lonlat.csv'
+geopointsfile='../testdata/hsofs_fullgrid_lonlat.csv'
 print(f'Geopoints coming from the file {geopointsfile}')
 df_geopoints=pd.read_csv(geopointsfile,header=0)
 df_geopoints.drop('node',axis=1, inplace=True)
