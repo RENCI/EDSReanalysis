@@ -10,19 +10,19 @@ message: >-
   from this file.
 type: software
 authors:
-  - given-names: 'Jeffrey '
+  - affiliation: RENCI
     name-particle: L
     family-names: Tilson
-    affiliation: RENCI
+    name-suffix: Jeffrey
     email: jtilson@renci.org
-  - given-names: James
+  - affiliation: RENCI
+    name-particle: M
     family-names: McManus
-    affiliation: RENCI
+    name-suffix: James
     email: jmpmcman@renci.org
-  - given-names: Brian
+  - affiliation: RENCI
     name-particle: O
     family-names: Blanton
+    name-suffix: Brian
     email: bblanton@renci.org
-    affiliation: RENCI
-
 
