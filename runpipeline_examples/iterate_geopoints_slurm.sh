@@ -1,4 +1,4 @@
-!/bin/bash -l 
+#!/bin/bash -l 
 
 #firstyear=1989
 firstyear=1979

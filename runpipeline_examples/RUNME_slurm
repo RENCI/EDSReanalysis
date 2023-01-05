@@ -1,4 +1,5 @@
 #!/bin/bash -l 
+
 #SBATCH -t 02:00:00
 #SBATCH -p batch
 #SBATCH -N 1
@@ -9,10 +10,13 @@
 year=$1
 keep_headers=$2
 
-export PYTHONPATH=/projects/sequence_analysis/vol1/prediction_work/EDSReanalysis
+#POINTFILE="$EDSREANALYSIS/testdatalist_10000_points.csv"
+POINTSFILE="$EDSREANALYSIS/testdata/hsofs_200grid_lonlat.csv"
+POINTSFILE="$EDSREANALYSIS/testdata/NOAA_Stations_141.csv"
 
 if [ "$keep_headers" == "1" ]; then
-    python ../examples/geopoints_simple_singleyear_reducedWaterlevels.py --keep_headers --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/list_10000_points.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
+    python "$EDSREANALYSIS"/examples/geopoints_simple_singleyear_reducedWaterlevels.py --keep_headers --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile "$POINTSFILE" --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
 else
-    python ../examples//geopoints_simple_singleyear_reducedWaterlevels.py --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/list_10000_points.csv' --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
+    python "$EDSREANALYSIS"/examples//geopoints_simple_singleyear_reducedWaterlevels.py --year "$year" --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile "$POINTSFILE" --kmax=10 --alt_urlsource 'http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d'
 fi
+
