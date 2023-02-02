@@ -35,3 +35,8 @@ python ./geopoints_simple_singleyear_reducedWaterlevels.py --year 2010 --filenam
 
 swan_HS.63.d0.no-unlim.T.rc.nc
 
+# Examples of running the geopoints_simple_readNodes.py code
+
+python geopoints_simple_readNodes.py --year 2010 --filename 'fort.63.nc' --variable_name 'zeta' --geopointsfile '../testdata/NOAA_Stations_141.csv' --urlbase "http://tds.renci.org/thredds/dodsC/2022/nam/2022011600/hsofs/hatteras.renci.org/hsofs-nam-bob-2021/nowcast" 
+
+
