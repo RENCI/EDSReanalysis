@@ -31,7 +31,7 @@ Ymax=2021
 YEARS=[item for item in range(Ymin, Ymax+1)]
 
 # Default standard location is on the primary RENCI TDS
-urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
+urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d"
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/ec95d/%d"
 
 
@@ -320,6 +320,37 @@ def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=
     agresults['final_reduced_data']=df_final
     agresults['final_meta_data']=df_meta
     
+    return agresults
+
+def FetchWaterLevelData_from_ds(df_geo_node_points, ds, variable_name=None):
+    """
+    This method acquires ADCIRC water levels for the list of geopoints/Nodes. 
+    df_geo_node_points: A dataframe of stationid (index) vs ADCIRC node value
+
+   Assumes Nodes begins at 1. No checking is performed
+    """
+    agresults=dict()
+
+    if variable_name is None:
+        print('User MUST supply the correct variable name')
+        sys.exit(1)
+    if debug: print(f'Variable name is {variable_name}')
+    t0 = tm.time()
+    data_list=list()
+    #final_weights = agresults['final_weights']
+    #final_jvals = agresults['final_jvals']
+    acdict=get_adcirc_time_from_ds(ds)
+    t=acdict['time'].values
+    for vstation in df_geo_node_points.iterrows():
+        advardict = get_adcirc_slice_from_ds(ds,variable_name,it=vstation[1].Node-1) # SUBTRACT by 1
+        df = pd.DataFrame(advardict['var'], columns=[vstation[0]])
+        data_list.append(df)
+    if debug: print(f'Time to fetch annual all test station (triplets) was {tm.time()-t0}s')
+    df_final=pd.concat(data_list, axis=1)
+    df_final.index=t
+    t0=tm.time()
+    if debug: print(f'Time to reduce annual {len(final_jvals)} test stations is {tm.time()-t0}s')
+    agresults['final_data']=df_final
     return agresults
 
 def return_sorted_years(year_tuple):

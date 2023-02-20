@@ -22,7 +22,6 @@ def main(args):
     if args.urlbase is not None:
         print('No urlbase was supplied. We assume you want to get the reanalysis data and so will default to that value')
         urldirformat=args.urlbase
-
     try:
         urldir=urldirformat % year
     except TypeError:
