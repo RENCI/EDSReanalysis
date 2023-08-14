@@ -26,8 +26,10 @@ import utilities as utilities
 Kmax=utilities.Kmax
 Ymin=utilities.Ymin
 Ymax=utilities.Ymax
+print(f'demoInterface:Ymin, Ymax = {Ymin,Ymax}')
 
 dataurl=utilities.urldirformat
+print(f'demoInterface:urldirformat = {dataurl}')
 
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
@@ -56,7 +58,8 @@ class DownloadFileLink(FileLink):
 
 class demoInterface():
     def __init__(self):
-        fileext='.d0.no-unlim.T.rc.nc'
+        #fileext='.d0.no-unlim.T.rc.nc'
+        fileext='.d4.no-unlim.T.rc.nc';
         # Create variable dictionary
         self.vardict={}
         self.vardict['Water Level']=   {'filename': 'fort.63'+fileext,     'varname':'zeta'}
@@ -64,7 +67,6 @@ class demoInterface():
         self.vardict['Wave Period']=   {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
         self.vardict['Wave Direction']={'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
         self.vardict['Dynamic Correction']=        {'filename': 'offset.63'+fileext,   'varname':'offset'}
-
         
         #Create Styles
         style="""
@@ -116,7 +118,7 @@ class demoInterface():
     
         # Add title to header section o1
         with self.o1:
-            display(HTML('<center><h2>Reanalysis Timeseries Extractor Demonstrator</h2></center>'))
+            display(HTML('<center><h2>Reanalysis V2 Timeseries Extractor Demonstrator</h2></center>'))
             
         with self.o8:
             self.dataurl=Text(value=dataurl,
@@ -142,8 +144,8 @@ class demoInterface():
             # self.var_selector = Dropdown(description='Variable:', 
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
-                                options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
-                                #options=['water level', 'offset'],
+                                #options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
+                                options=['water level'],
                                 description='Variable:',
                                 disabled=False,
                                 button_style='', # 'success', 'info', 'warning', 'danger' or ''
@@ -151,9 +153,14 @@ class demoInterface():
                                 #icons=['check'] * 3
             )
             
-            self.year_selector=IntRangeSlider(value=[Ymin, Ymin],min=Ymin,max=Ymax,step=1,
+            self.year_selector=IntRangeSlider(value=[Ymin, Ymin],
+                                              min=Ymin,
+                                              max=Ymax,
+                                              step=1,
                                               description='Years:',
-                                              disabled=False,continuous_update=False,orientation='horizontal',
+                                              disabled=False,
+                                              continuous_update=False,
+                                              orientation='horizontal',
                                               readout=True,readout_format='d')
             #self.year_selector.layout = Layout(width='50%')
 
