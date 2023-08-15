@@ -28,7 +28,7 @@ def main(args):
     print(f'Prcessing year {year}')
 
     t0=tm.time()
-    df_product_data, df_product_metadata, df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=(year,year),filename=filename, variable_name=variable_name,geopoints=geopoints,nearest_neighbors=nearest_neighbors, alt_urlsource=args.alt_urlsource)
+    df_product_data, df_product_metadata, df_excluded, data_list_bob = utilities.Combined_multiyear_pipeline(year_tuple=(year,year),filename=filename, variable_name=variable_name,geopoints=geopoints,nearest_neighbors=nearest_neighbors, alt_urlsource=args.alt_urlsource)
 
     df_product_data.to_csv(f'{year}_data.csv',header=args.keep_headers)
     df_product_metadata.to_csv(f'{year}_meta.csv',header=args.keep_headers)
@@ -37,7 +37,8 @@ def main(args):
     print(df_product_data)
     df_product_data.to_pickle(f'{year}_data.pkl')
     print(f'Finished. Runtime was {tm.time()-t0}')
-
+    print(data_list_bob)
+    
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()

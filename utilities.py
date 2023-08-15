@@ -23,15 +23,16 @@ import time as tm
 Kmax=10
 got_kdtree=None
 TOL=10e-5
-debug=False
+debug=True
 
 # Specify available reanalysis years
-Ymin=1979
-Ymax=2021
+Ymin=2018
+Ymax=2018
 YEARS=[item for item in range(Ymin, Ymax+1)]
 
 # Default standard location is on the primary RENCI TDS
-urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
+#urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
+urldirformat="http://tds.renci.org/thredds/dodsC/ReanalysisV2/ADCIRC/%d"
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/ec95d/%d"
 
 
@@ -227,7 +228,7 @@ def ComputeBasisRepresentation(xylist, agdict, agresults):
     final_jvals = np.full( j.T[0].shape[0],-99999)
     final_status = np.full( within_interior[0].shape[0],False)
     # Loop backwards. thus keeping the "nearest" True for each geopoints for each k in kmax
-    for pvals,jvals,testvals in zip(phival_list[::-1], j.T[::-1], within_interior[::-1]):  # THis loops over Kmax values
+    for pvals,jvals,testvals in zip(phival_list[::-1], j.T[::-1], within_interior[::-1]):  # This loops over Kmax values
         final_weights[testvals] = pvals[testvals]
         final_jvals[testvals]=jvals[testvals]
         final_status[testvals] = testvals[testvals]
@@ -253,7 +254,7 @@ def detailed_weights_elements(phival_list, j):
         df = pd.concat([df_pvals,df_jvals],axis=1)
         df.index = df.index+1
         df.index = df.index.astype(int)
-        print(df.loc[2].to_frame().T)
+        print(df)
 
 def WaterLevelReductions(t, data_list, final_weights):
     """
@@ -265,7 +266,9 @@ def WaterLevelReductions(t, data_list, final_weights):
     input test points (some of which may be partially or completely nan)
     """
     final_list = list()
-    for index,dataseries,weights in zip(range(0,len(data_list)), data_list,final_weights):
+    for index,dataseries,weights in zip(range(0,len(data_list)), data_list, final_weights):
+        print('XYZ:')
+        print(weights.T)
         reduced_data = np.matmul(dataseries.values, weights.T)
         df = pd.DataFrame(reduced_data, index=t, columns=[f'P{index+1}'])
         final_list.append(df)
@@ -313,12 +316,14 @@ def ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=
         df = pd.DataFrame(advardict['var'])
         data_list.append(df)
     if debug: print(f'Time to fetch annual all test station (triplets) was {tm.time()-t0}s')
+    
     df_final=WaterLevelReductions(t, data_list, final_weights)
     t0=tm.time()
     df_meta=GenerateMetadata(agresults) # This is here mostly for future considerations
     if debug: print(f'Time to reduce annual {len(final_jvals)} test stations is {tm.time()-t0}s')
     agresults['final_reduced_data']=df_final
     agresults['final_meta_data']=df_meta
+    agresults['data_list']=data_list
     
     return agresults
 
@@ -360,7 +365,7 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
         print(year)
         url=f'{urlfetchdir % year}/{filename}'
         if debug: print(url)
-        df_data, df_metadata, df_excluded=Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=nearest_neighbors)
+        df_data, df_metadata, df_excluded, data_list_bob = Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=nearest_neighbors)
         #list_data.append(df_data.loc[str(year)]) # Remove any flanks that may exist
         try:
             list_data.append(df_data.loc[f'{year}':f'{year+1}-01-01 00:00:00']) # Try to also include the first hour of the next year
@@ -371,7 +376,7 @@ def Combined_multiyear_pipeline(year_tuple=None, filename=None, geopoints=None, 
     df_final_data=pd.concat(list_data,axis=0)
     df_final_metadata=pd.concat(list_meta,axis=0)
     
-    return df_final_data, df_final_metadata, df_excluded # Just grab last df_excluded since they are al the same (or should be)
+    return df_final_data, df_final_metadata, df_excluded, data_list_bob # Just grab last df_excluded since they are all the same (or should be)
 
 # NOTE We do not need to rebuild the tree for each year since the grid is unchanged.
 def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
@@ -392,12 +397,13 @@ def Combined_pipeline(url, variable_name, geopoints, nearest_neighbors=10):
     agresults=ComputeQuery(geopoints, agdict, kmax=nearest_neighbors)
     agresults=ComputeBasisRepresentation(geopoints, agdict, agresults)
     agresults=ConstructReducedWaterLevelData_from_ds(ds, agdict, agresults, variable_name=variable_name)
-
+ 
     if debug: print(f'Basis function Tolerance value is {TOL}')
     if debug: print(f'List of {len(agresults["outside_elements"])} stations not assigned to any grid element follows for kmax {nearest_neighbors}')
     df_product_data=agresults['final_reduced_data']
     df_product_metadata=agresults['final_meta_data']
+
     df_excluded_geopoints=pd.DataFrame(geopoints[agresults['outside_elements']], index=agresults['outside_elements']+1, columns=['lon','lat'])
     if debug: print('Finished annual Combined_pipeline')
     
-    return df_product_data, df_product_metadata, df_excluded_geopoints
+    return df_product_data, df_product_metadata, df_excluded_geopoints, agresults['data_list']

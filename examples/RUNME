@@ -3,7 +3,6 @@
 
 # Defaults to the TDS to fetch ADCIRC data
 
-python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'fort.63.d0.no-unlim.T.rc.nc' --variable_name 'zeta' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
 python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_HS.63.d0.no-unlim.T.rc.nc' --variable_name 'swan_HS' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
 python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_TPS.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_TPS' --geopointsfile '../testdata/hsofs_example_geopoints.csv'
 python ../geopoints_simple_multiyear_reducedWaterlevels.py --filename 'swan_DIR.63_transposed_and_rechunked_1024.nc' --variable_name 'swan_DIR' --geopointsfile '../testdata/hsofs_example_geopoints.csv'

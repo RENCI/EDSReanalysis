@@ -56,14 +56,14 @@ class DownloadFileLink(FileLink):
 
 class demoInterface():
     def __init__(self):
-        fileext='.d0.no-unlim.T.rc.nc'
+        fileext='.d4.no-unlim.T.rc.nc'
         # Create variable dictionary
         self.vardict={}
-        self.vardict['Water Level']=   {'filename': 'fort.63'+fileext,     'varname':'zeta'}
-        self.vardict['Wave Height']=   {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
-        self.vardict['Wave Period']=   {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
-        self.vardict['Wave Direction']={'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
-        self.vardict['Dynamic Correction']=        {'filename': 'offset.63'+fileext,   'varname':'offset'}
+        self.vardict['Water Level']        = {'filename': 'fort.63'+fileext,     'varname':'zeta'}
+        self.vardict['Wave Height']        = {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
+        self.vardict['Wave Period']        = {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
+        self.vardict['Wave Direction']     = {'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
+        self.vardict['Dynamic Correction'] = {'filename': 'offset.63'+fileext,   'varname':'offset'}
 
         
         #Create Styles
@@ -225,12 +225,12 @@ class demoInterface():
         # With redirect_stdout run utilities.Combined_multiyear_pipeline 
         with redirect_stdout(po):
             start_time=time.time()
-            self.df_product_data,self.df_product_metadata,self.df_excluded = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
-                                                                                                                   filename=filename, 
-                                                                                                                   variable_name=variable_name,
-                                                                                                                   geopoints=points,
-                                                                                                                   nearest_neighbors=Kmax,
-                                                                                                                   alt_urlsource=dataurl)
+            self.df_product_data,self.df_product_metadata,self.df_excluded, self.data_list = utilities.Combined_multiyear_pipeline(year_tuple=year_tuple,
+                                                                                                                filename=filename, 
+                                                                                                                variable_name=variable_name,
+                                                                                                                geopoints=points,
+                                                                                                                nearest_neighbors=Kmax,
+                                                                                                                alt_urlsource=dataurl)
             end_time=time.time()
 
 
