@@ -145,7 +145,7 @@ class demoInterface():
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
                                 #options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
-                                options=['water level'],
+                                options=['Water Level'],
                                 description='Variable:',
                                 disabled=False,
                                 button_style='', # 'success', 'info', 'warning', 'danger' or ''

@@ -34,7 +34,7 @@ print(f'utilities:Ymin, Ymax = {Ymin,Ymax}')
 
 # Default standard location is on the primary RENCI TDS
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
-urldirformat="http://tds.renci.org/thredds/dodsC/ReanalysisV2/ADCIRC/%d"
+urldirformat="https://tds.renci.org/thredds/dodsC/ReanalysisV2/ADCIRC/%d"
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/ec95d/%d"
 
 
