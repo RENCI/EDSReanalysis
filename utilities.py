@@ -29,14 +29,16 @@ debug=False
 Ymin=1979
 Ymax=2022
 YEARS=[item for item in range(Ymin, Ymax+1)]
-print(f'utilities:Ymin, Ymax = {Ymin,Ymax}')
+#print(f'utilities:Ymin, Ymax = {Ymin,Ymax}')
 
+fileext='.d0.no-unlim.T.rc.nc'
+#fileext='.d4.no-unlim.T.rc.nc';
+#print(f'utilities:fileext = {fileext}')
 
 # Default standard location is on the primary RENCI TDS
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/hsofs/%d-post"
-urldirformat="https://tds.renci.org/thredds/dodsC/ReanalysisV2/ADCIRC/%d"
+urldirformat="https://tdsres.apps.renci.org/thredds/dodsC/ReanalysisV2/ADCIRC/ERA5/hsofs.V2/%d-post"
 #urldirformat="http://tds.renci.org/thredds/dodsC/Reanalysis/ADCIRC/ERA5/ec95d/%d"
-
 
 def get_adcirc_grid_from_ds(ds):
     """

@@ -31,6 +31,9 @@ print(f'demoInterface:Ymin, Ymax = {Ymin,Ymax}')
 dataurl=utilities.urldirformat
 print(f'demoInterface:urldirformat = {dataurl}')
 
+fileext=utilities.fileext
+print(f'demoInterface:fileext = {fileext}')
+        
 # Function that downloads DataFrame to CSV file, using RAM.
 def create_download_link(df, filename, title = "Download CSV file using RAM"):
     csv = df.to_csv()
@@ -58,15 +61,13 @@ class DownloadFileLink(FileLink):
 
 class demoInterface():
     def __init__(self):
-        #fileext='.d0.no-unlim.T.rc.nc'
-        fileext='.d4.no-unlim.T.rc.nc';
         # Create variable dictionary
         self.vardict={}
-        self.vardict['Water Level']=   {'filename': 'fort.63'+fileext,     'varname':'zeta'}
-        self.vardict['Wave Height']=   {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
-        self.vardict['Wave Period']=   {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
-        self.vardict['Wave Direction']={'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
-        self.vardict['Dynamic Correction']=        {'filename': 'offset.63'+fileext,   'varname':'offset'}
+        self.vardict['Water Level']        = {'filename': 'fort.63'+fileext,     'varname':'zeta'}
+        self.vardict['Wave Height']        = {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
+        self.vardict['Wave Period']        = {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
+        self.vardict['Wave Direction']     = {'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
+        self.vardict['Dynamic Correction'] = {'filename': 'dynamicWaterlevelCorrection.63'+fileext,   'varname':'dynamicWaterlevelCorrection'}
         
         #Create Styles
         style="""
@@ -145,7 +146,8 @@ class demoInterface():
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
                                 #options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
-                                options=['Water Level'],
+                                options=['Water Level', 'Wave Height', 'Dynamic Correction'],
+                                #options=['Water Level'],
                                 description='Variable:',
                                 disabled=False,
                                 button_style='', # 'success', 'info', 'warning', 'danger' or ''
