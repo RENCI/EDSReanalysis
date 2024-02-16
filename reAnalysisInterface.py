@@ -145,8 +145,8 @@ class demoInterface():
             # self.var_selector = Dropdown(description='Variable:', 
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
-                                #options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
-                                options=['Water Level', 'Wave Height', 'Dynamic Correction'],
+                                options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
+                                #options=['Water Level', 'Wave Height', 'Dynamic Correction'],
                                 #options=['Water Level'],
                                 description='Variable:',
                                 disabled=False,
