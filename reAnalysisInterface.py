@@ -64,9 +64,9 @@ class demoInterface():
         # Create variable dictionary
         self.vardict={}
         self.vardict['Water Level']        = {'filename': 'fort.63'+fileext,     'varname':'zeta'}
-        self.vardict['Wave Height']        = {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
-        self.vardict['Wave Period']        = {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
-        self.vardict['Wave Direction']     = {'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
+        #self.vardict['Wave Height']        = {'filename': 'swan_HS.63'+fileext,  'varname':'swan_HS'}
+        #self.vardict['Wave Period']        = {'filename': 'swan_TPS.63'+fileext, 'varname':'swan_TPS'}
+        #self.vardict['Wave Direction']     = {'filename': 'swan_DIR.63'+fileext, 'varname':'swan_DIR'}
         self.vardict['Dynamic Correction'] = {'filename': 'dynamicWaterlevelCorrection.63'+fileext,   'varname':'dynamicWaterlevelCorrection'}
         
         #Create Styles
@@ -119,7 +119,7 @@ class demoInterface():
     
         # Add title to header section o1
         with self.o1:
-            display(HTML('<center><h2>Reanalysis V2 Timeseries Extractor Demonstrator</h2></center>'))
+            display(HTML('<center><h2>Reanalysis V3 (CORA V1.1) Timeseries Extractor Demonstrator</h2></center>'))
             
         with self.o8:
             self.dataurl=Text(value=dataurl,
@@ -145,8 +145,8 @@ class demoInterface():
             # self.var_selector = Dropdown(description='Variable:', 
             #                              options=['water level', 'wave height', 'wave period', 'wave direction', 'offset'])
             self.var_selector = ToggleButtons(
-                                options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
-                                #options=['Water Level', 'Wave Height', 'Dynamic Correction'],
+                                #options=['Water Level', 'Wave Height', 'Wave Period', 'Wave Direction', 'Dynamic Correction'],
+                                options=['Water Level', 'Dynamic Correction'],
                                 #options=['Water Level'],
                                 description='Variable:',
                                 disabled=False,
